@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { pretendard } from "./ui/fonts";
-import "./ui/globals.css";
+
+import { pretendard } from "@/ui/fonts";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,8 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={pretendard.className}>{children}</body>
+    <html lang="en" className={pretendard.className}>
+      <body className="h-dvh overflow-y-auto flex flex-col max-w-screen-md mx-auto">
+        <Header />
+        <main className="grow">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
