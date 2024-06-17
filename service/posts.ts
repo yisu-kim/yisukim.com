@@ -4,22 +4,22 @@ import { readFile, readdir } from "fs/promises";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 
-export interface MetaData extends Partial<Record<string, string>> {
+export type MetaData = {
   title: string;
   description: string;
   date: string;
-  thumbnail?: string;
-}
+  thumbnail: string;
+};
 export type Post = MetaData & { slug: string };
 export type SerializedPost = MDXRemoteSerializeResult<
   Record<string, unknown>,
   Post
 >;
 
-export async function getAllPosts(): Promise<MetaData[]> {
+export async function getAllPosts(): Promise<Post[]> {
   const dirPath = path.join(process.cwd(), "posts");
   const filePaths = await readdir(dirPath, "utf-8");
-  const metadatas: MetaData[] = await Promise.all(
+  const metadatas: Post[] = await Promise.all(
     filePaths.map(async (filePath) => {
       const content = await readFile(
         path.join(process.cwd(), "posts", filePath),
