@@ -1,23 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Post } from "@/service/posts";
+import { MetaData } from "@/service/posts";
 
-type Props = { post: Post };
+type Props = { post: MetaData };
 export default function PostCard({
-  post: { title, description, date, path },
+  post: { slug, title, description, date, thumbnail },
 }: Props) {
   return (
-    <Link href={`/posts/${path}`}>
+    <Link href={`/posts/${slug}`}>
       <article className="h-full border p-2">
         <div className="h-full flex flex-col border">
-          <Image
-            className="w-full"
-            src={`/images/posts/${path}.png`}
-            alt={title}
-            width={400}
-            height={300}
-          />
+          {thumbnail && (
+            <Image
+              className="w-full"
+              src={`/posts/${slug}/${thumbnail}`}
+              alt={title}
+              width={400}
+              height={300}
+            />
+          )}
           <div className="grow flex flex-col gap-1 p-4">
             <h3 className="text-xl font-bold">{title}</h3>
             <p className="w-full grow">{description}</p>

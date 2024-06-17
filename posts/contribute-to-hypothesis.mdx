@@ -1,0 +1,631 @@
+---
+title: hypothesis/client 오픈 소스에 기여하기
+description: React 스터디를 하면서 사용했던 Hypothesis 오픈소스의 버그를 발견해 직접 코드를 수정해 본 경험을 살펴보자.
+date: 2023-09-24
+thumbnail: thumbnail.png
+---
+
+## 사용 중인 오픈소스의 버그를 발견하다
+
+[React 공식 문서 스터디 with Hypothesis](/posts/the-react-docs-study-with-hypothesis) 글에서 Hypothesis라는 브라우저 익스텐션을 소개한 적이 있다. 웹 문서에 하이라이트를 남기고 실시간으로 주석을 공유할 수 있는 툴인데 지난 React 스터디에서 매우 유용하게 사용했다.
+
+그런데 사용하던 중 한 가지 불편한 점을 맞닥뜨리게 되었다.
+
+1. Deep Dive 파트에서 버튼을 클릭해 세부 내용을 펼치고 하이라이트를 남긴다.
+2. 접힌 상태에서 하이라이트 카드를 선택하면 엉뚱한 위치로 스크롤 된다.
+
+![스크롤 이슈](/posts/contribute-to-hypothesis/스크롤_이슈.gif)
+
+개발자여서 한 가지 좋은 점은 버그를 발견했을 때 불편하다고 느끼기만 하는 것이 아니라 무엇이 문제일지 호기심이 일고 내가 개선할 수 있지 않을까 하는 기대감이 함께 한다는 점이다. 그러면 이제부터 구체적인 사례를 통해 오픈소스에 기여하는 방법을 알아보자.
+
+## 오픈소스에 코드로 기여하는 방법
+
+> 🚩 개인적인 경험을 기반으로 하고 있습니다. 보다 체계적인 가이드는 [오픈 소스 가이드](https://opensource.guide/ko/)를 참고해 보세요.
+
+이 이슈는 간단한 테스트만 해봐도 내가 직접 코드를 작성해 PR을 올릴 수 있는지 아니면 보고만 가능한 이슈인지 빠르게 짐작할 수 있을 것 같았다.
+
+펼친 상태에서 하이라이트 카드를 선택하면 정상적인 위치로 스크롤되는가? 된다.
+
+개발자 도구를 열어 어떻게 하면 펼친 상태로 바꿀 수 있을지 확인해 보았다. Deep Dive 파트에는 details 태그가 사용되었는데 시맨틱한 HTML이므로 라이브러리에서 범용적으로 대응해도 무방해 보인다.
+
+![디테일 태그](/posts/contribute-to-hypothesis/디테일_태그.png)
+
+그렇다면? 스크롤 하기 전에 details 태그를 미리 펼치기만 하면 된다.
+
+[MDN 문서](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)를 보니 details 태그를 펼치려면 open 속성만 추가하면 되므로 충분히 스스로 해결할 수 있다는 생각이 들어 직접 코드를 수정하기로 결정했다.
+
+### 0. 오픈소스 심박수 살펴보기
+
+잠깐! 유명하고 활동이 왕성한 레포 예를 들어, React라면 이 단계를 건너뛰어도 되지만 그렇지 않은 경우에는 주의해야 할 점이 있다. 모든 대화가 그렇듯이 상대방이 듣고 답할 준비가 되었을 때 말을 걸어야 한다는 것이다.
+
+깃허브 조직을 살펴보는 경우라면 하단 Repositories 부분에서 레포들의 심장이 생생하게 뛰고 있는지 훑어보면 된다. 열려 있는 이슈와 PR 그리고 최근 업데이트 일시를 참고해 보자.
+
+![깃허브 레포 목록](/posts/contribute-to-hypothesis/깃허브_레포_목록.png)
+
+기여할 레포가 명확해서 바로 들어가 볼 수 있다면 마지막 커밋은 언제인지, 컨트리뷰터는 몇 명인지, 최근에 열리거나 닫힌 PR의 날짜는 언제인지 등을 확인해 보는 것이 좋다. README에도 공지가 없는지 잘 읽어보자. 더 이상 유지보수를 하지 않는 레포일 수도 있다.
+
+### 1. 기여할 레포 찾기
+
+활발하게 오픈소스 활동이 이루어지고 있다면 본격적으로 어떤 레포에서 코드를 수정해야 하는지 찾아야 한다. 보통 첫 화면에서 Pinned 부분을 확인하면 주요 레포가 무엇인지 알 수 있다.
+
+![깃허브 주요 레포](/posts/contribute-to-hypothesis/깃허브_주요_레포.png)
+
+[hypothesis](https://github.com/hypothesis) 조직에는 100개의 레포가 있지만 그 중 핵심은 API 서비스인 h 레포, 클라이언트 서비스인 client 레포, 그리고 브라우저 익스텐션 서비스인 browser-extension 레포인 것 같다.
+
+처음에는 하이라이트 카드를 클릭하는 기능을 브라우저 익스텐션에서 제공하므로 browser-extension 레포를 보면 되나 싶었는데 README를 읽어보니 다음과 같은 문구가 있어 [client](https://github.com/hypothesis/client) 레포를 살펴보기로 했다.
+
+> Note that the browser extensions are for the most part just a wrapper around the Hypothesis client. Depending on what you're interested in working on, you may need to check out the client repository too.
+
+### 2. 로컬 환경 설정 및 서비스 실행하기
+
+레포에 접근하면 가장 먼저 README를 살펴봐야 한다. 오픈소스의 사용자 또는 개발자를 위한 가이드가 제공되기 때문이다. client 레포의 README에서 안내하는 [개발자 가이드](https://h.readthedocs.io/projects/client/en/latest/developers/developing.html)를 따라가 보니 다음과 같이 로컬 환경을 세팅하도록 안내하고 있다.
+
+> To build the client for development:
+>
+> ```sh
+> git clone 'https://github.com/hypothesis/client.git'
+> cd client
+> make
+> ```
+
+레포의 멤버가 아니기 때문에 권한이 없어 본인의 계정으로 복사한 레포에서 작업해야 하므로 포크한 다음 그 주소를 사용해 clone 했다.
+
+보통 라이브러리를 사용할 때는 npm 명령어를 사용하기 때문에 make라는 명령어를 보고 걱정했는데 아니나 다를까 치자마자 help 메시지가 뜨는 것을 보고 당황했다. 하지만 천천히 읽어보니 make dev 명령어를 사용하면 로컬 서버를 실행할 수 있다는 걸 알 수 있었다.
+
+그러면 가이드에 make dev로 적혀 있어야 하지 않을까 라고 생각했는데 Makefile을 읽어보니 아래와 같이 의도된 것임을 알 수 있었다.
+
+> ```make
+> .PHONY: default
+> default: help
+> ```
+
+### 2-1. 연관된 서비스 연결 및 빌드하기
+
+그런데 여기서 끝이 아니다. 클라이언트의 동작을 브라우저에서 확인하기 위해서는 브라우저 익스텐션 아니면 h 서비스를 로컬에서 실행해 연결해야만 했다.
+
+> To run your development client in a browser you'll need a local copy of either the Hypothesis Chrome extension or h. Follow either Running the Client from the Browser Extension or Running the Client From h below. If you're only interested in making changes to the client (and not to h) then running the client from the browser extension is easiest.
+
+브라우저 익스텐션을 통해 확인해야 하는 이슈이니 익스텐션을 빌드하는 방법을 마저 읽어 보았다.
+
+> 1. Check out the browser extension and follow the steps in the browser extension's documentation to build the extension and configure it to use your local version of the client and the production Hypothesis service.
+> 2. Start the client's development server to rebuild the client whenever it changes:
+>
+> ```sh
+> make dev
+> ```
+>
+> 3. After making changes to the client, you will need to run make in the browser extension repo and reload the extension in Chrome to see changes. You can use Extensions Reloader to make this easier.
+
+로컬의 클라이언트를 사용해 익스텐션을 빌드하려면 익스텐션 레포의 문서를 먼저 확인하라고 한다. 일단 [browser-extension](https://github.com/hypothesis/browser-extension) 레포를 로컬에 받아보자. 여기서는 그냥 포크 없이 클론했는데 그 이유는 이 레포의 코드를 수정할 예정이 없기 때문이다.
+
+다음으로 README를 읽어보니 두 프로젝트를 연결하기 위해서는 우선 client 폴더에서 link 명령어를 수행한 다음 browser-extension 폴더로 가서 link hypothesis 명령어를 수행하면 된다고 한다.
+
+> Depending on what you're interested in working on, you may need to check out the client repository too. If you do that, you can get the browser extension repository to use your checked-out client repository by running
+>
+> ```sh
+> yarn link
+> ```
+>
+> in the client repository, and then
+>
+> ```sh
+> yarn link hypothesis
+> ```
+>
+> in the browser-extension repository. After that, a call to make build will use the built client from the client repository.
+
+#### 트러블슈팅 1: yarn link
+
+다소 생소하지만 지금까지처럼 따라 하면 문제 없겠지라고 생각했다. 그런데 막상 yarn link 명령어를 실행해 보니 아래와 같은 에러 메시지가 나타났다.
+
+```sh
+Unknown Syntax Error: Not enough positional arguments.
+
+$ yarn link [-A,--all] [-p,--private] [-r,--relative] <destination>
+```
+
+당황스럽겠지만 이럴 때는 에러 메시지를 찬찬히 읽어보자. \<destination\\>이 필요하다고 안내하고 있다.
+
+명령어의 정확한 사용법을 확인하기 위해 공식 문서를 찾아보기로 했다. [yarn v1 공식 문서](https://classic.yarnpkg.com/lang/en/docs/cli/link)에서는 link 명령어에 대해 다음과 같이 소개하고 있다. 그리고 이후 명령어를 실행하는 방법이 나와 있는데 가이드와 동일하게 yarn link 뒤에 arguments를 더 넣을 필요가 없었다.
+
+> Symlink a package folder during development.
+>
+> For development, a package can be linked into another project. This is often useful to test out new features or when trying to debug an issue in a package that manifests itself in another project.
+
+그러면 에러가 발생하지 않아야 하는데 뭐가 문제일까 고민하다가 문득 공식 문서가 1버전인 것을 깨달았다. 현재 로컬의 yarn 버전은 2버전으로 더 높다. 분명 바뀐 부분이 있어서 실행이 안 된다고 생각해 [yarn v2+ 버전의 공식 문서](https://yarnpkg.com/cli/link)를 확인해 보니 아니나 다를까 구체적인 경로를 작성하도록 문법이 약간 바뀌었다.
+
+> Register one or more remote workspaces for use in the current project :
+>
+> ```sh
+> yarn link ~/ts-loader ~/jest
+> ```
+
+로컬에 레포를 다운받은 구조는 다음과 같다.
+
+```
+hypothesis
+├── client
+└── browser-extension
+```
+
+browser-extension에서 client를 사용하는 것이므로 browser-extension 폴더로 이동해 다음과 같이 명령어를 실행했다. 다행히 에러 없이 잘 수행되었다!
+
+```sh
+yarn link ../client
+```
+
+그러면 이제 자연스럽게 수행 결과를 확인하고 싶어진다. 공식 문서에 따르면 project-level manifest에 resolutions 필드가 설정될 거라고 한다. 찰떡같이 알아들어 보자면 package.json을 뜻하는 것 같다.
+
+> This command will set a new resolutions field in the project-level manifest and point it to the workspace at the specified location (even if part of another project).
+
+package.json 파일을 확인해보니 그 말대로 아래와 같이 resolutions 필드에 로컬 경로가 설정된 것을 확인할 수 있었다. 또한 yarn.lock 파일 내에서도 변동이 발생했다.
+
+```json
+"resolutions": {
+  "hypothesis": "portal:/mnt/d/Develop/hypothesis/client"
+}
+```
+
+```json
+"hypothesis@portal:/mnt/d/Develop/hypothesis/client::locator=hypothesis-browser-extension%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "hypothesis@portal:/mnt/d/Develop/hypothesis/client::locator=hypothesis-browser-extension%40workspace%3A."
+  languageName: node
+  linkType: soft
+```
+
+이렇게 또 한고비를 넘겼다. 이제 브라우저 익스텐션을 빌드해서 정말 로컬 client를 바라보는지 확인할 시간이다. [빌드 가이드](https://github.com/hypothesis/browser-extension/blob/main/docs/building.md)를 읽고 그대로 명령어를 실행하자 오류 없이 build 폴더에 결과물이 잘 생성되었다.
+
+> The extension build is configured by a JSON settings file, some examples of which are supplied in the settings/ directory. To build the extension using the default settings file (settings/chrome-dev.json), run make build:
+>
+> ```sh
+> $ make build
+> ```
+
+그런데 빌드한 익스텐션을 어떻게 크롬에서 확인할 수 있을까? 당연히 가이드에서 친절하게 설명해 주고 있다.
+
+> Once you've built the extension, you will be able to load the build/ directory as an unpacked extension:
+>
+> 1. Go to chrome://extensions/ in Chrome.
+> 2. If you used the chrome-prod.json settings file to build a production extension, you will need to remove the "real" production extension from Chrome before loading your locally built one or create a new Chrome profile without the real one installed.
+> 3. Tick Developer mode.
+> 4. Click Load unpacked extension.
+> 5. Browse to the build/ directory where the extension was built and select it.
+
+Developer mode라는 게 있다는 걸 처음 알았다. 모드를 활성화하면 Load unpacked 버튼이 나타나게 되는데 browser-extension 폴더로 이동해 build 폴더 자체를 선택하면 정말로 익스텐션이 추가된다.
+
+![익스텐션 디벨로퍼 모드](/posts/contribute-to-hypothesis/익스텐션_디벨로퍼_모드.png)
+
+#### 트러블슈팅 2: This site can't be reached
+
+그런데 또다시 문제가 발생했다. 익스텐션 추가와 동시에 이동되는 http\<area\>://localhost:5000/welcome 페이지가 정상적으로 실행되지 않고 있었다. 익스텐션도 마찬가지로 계속 로딩 중 표시만 뜨면서 정상적으로 동작하지 않았다.
+
+그래서 이 5000 포트가 뜬금없이 어디서 등장한 건지 한참 고민했다. [트러블슈팅 문서](https://github.com/hypothesis/browser-extension/blob/main/docs/troubleshooting.md)도 읽어보았지만 5000포트가 정확히 무얼 의미하는지 설명하는 내용이 없었다. 아까 가이드에서 기본 명령어를 실행할 때 settings/chrome-dev.json 파일을 사용한다고 했으므로 해당 파일을 살펴보았다. 이 중 apiUrl을 보면 로컬 호스트의 5000 포트를 바라보고 있는 걸 알 수 있다.
+
+```json
+{
+  "buildType": "dev",
+  "manifestV3": true,
+
+  "apiUrl": "http://localhost:5000/api/",
+  "authDomain": "localhost",
+  "bouncerUrl": "http://localhost:8000/",
+  "serviceUrl": "http://localhost:5000/",
+
+  "browserIsChrome": true,
+  "appType": "chrome-extension"
+}
+```
+
+문득 주요 서비스 3개 중 하나인 h 레포가 API 서비스를 제공하고 있으므로 로컬에서 실행한 API 서버를 바라보기 위한 설정이 아닐까 하는 짐작이 들었다. [h 레포의 가이드](https://h.readthedocs.io/en/latest/developing/install/)를 읽어보니 역시나 서버가 5000 포트로 실행되는 것을 알 수 있었다.
+
+> This will start the server on port 5000 (http\<area\>://localhost:5000)
+
+서버 레포를 수정하는 것이 아니므로 그냥 프로덕션 서버를 바라보아도 무방하다. chrome-prod.json 파일을 살펴보니 역시나 apiUrl이 프로덕션 도메인을 가리키고 있다.
+
+```
+{
+  "buildType": "production",
+  "manifestV3": true,
+  "key": "{key 값}",
+
+
+  "apiUrl": "https://hypothes.is/api/",
+  "authDomain": "hypothes.is",
+  "bouncerUrl": "https://hyp.is/",
+  "serviceUrl": "https://hypothes.is/",
+
+  "oauthClientId": "{id 값}",
+
+  "sentryPublicDSN": "{DSN 값}",
+
+  "browserIsChrome": true,
+  "appType": "chrome-extension"
+}
+```
+
+그러면 명령어를 바꿔서 다시 빌드해보자.
+
+> To build the extension from a different settings file, provide a SETTINGS_FILE path to make build:
+>
+> ```
+> $ make build SETTINGS_FILE=settings/chrome-prod.json
+> ```
+
+#### 트러블슈팅 3: dirty git state
+
+음 이제 정말 끝이라고 생각했는데 또다시 에러가 발생한다. 이번에는 git state에 대한 클레임이 들어왔다. 아까 link 명령어를 실행하면서 package.json과 yarn.lock 파일에 변동이 있었는데 당연히 올릴 예정이 없으므로 커밋을 하지 않았다. 그런데 이 부분이 막상 빌드할 때 문제가 되는 것으로 보인다.
+
+```
+Error: cannot create production build with dirty git state!
+```
+
+변경 사항을 임시로 커밋하고 명령어를 재실행해 보니 아무 문제 없이 빌드가 종료되고 이번에는 정상적으로 welcome 페이지가 표시된다.
+
+![프로젝트 웰컴 페이지](/posts/contribute-to-hypothesis/프로젝트_웰컴_페이지.png)
+
+이제 정말 모든 세팅이 끝났다. 하지만 client 코드를 아직 건드리지 않았기 때문에 로컬을 바라보는 게 맞는지 확신이 안 든다. 프론트엔드 개발자라서인지 눈으로 확인해야 마음이 편해서 client 프로젝트에서 사이드바 부분을 찾아 # 문자를 추가해 보았다. 이때, 가이드에 설명되어 있듯이 client와 browser-extension을 다시 빌드해야 한다는 점에 유의했다.
+
+추가한 #이 사이드바에 잘 나타난다. 드디어, 정말로, 마침내 로컬에서 개발할 환경이 갖춰졌다. 사실 막힐 때마다 그냥 이슈만 보고하고 끝낼 걸 그랬나 하는 생각이 들었지만 역시 포기하지 않길 잘했다. 🙌
+
+![변경사항_반영_확인](/posts/contribute-to-hypothesis/변경사항_반영_확인.png)
+
+### 3. 버그를 수정할 위치 찾기
+
+본격적으로 문제가 발생한 코드의 위치를 대략 찍어보자. 일단 사이드바를 출발점으로 삼기로 했다.
+
+src/sidebar/index.tsx > HypothesisApp.tsx > SidebarView.tsx > ThreadList.tsx
+
+여기까지 찾았을 때 scroll이라는 단어가 보이기 시작해 제대로 찾아가고 있다고 생각하면서 카드를 클릭하는 부분을 찾기 시작했다.
+
+... > ThreadList.tsx > ThreadCard.tsx > Card.tsx
+
+```ts
+<Card
+  onClick={e => {
+    // Prevent click events intended for another action from
+    // triggering a page scroll.
+    if (!isFromButtonOrLink(e.target as Element) && thread.annotation) {
+      scrollToAnnotation(thread.annotation);
+    }
+  }}
+  ...
+/>
+```
+
+Card의 onClick 이벤트를 확인해보니 scrollToAnnotation이라는 메서드가 보인다. 참고로 이해를 위해 하이라이트라고 계속 표기했지만 이 서비스에서는 다른 사용자에게 공유되는 하이라이트 기능의 이름을 어노테이션이라고 한다.
+
+... > src/sidebar/services/frame-sync.ts
+
+메서드가 정의된 부분으로 넘어가 보니 frame-sync라는 복잡한 파일을 맞닥뜨리게 되었다. 거의 근접한 것 같다고 생각했는데 역시 한 번에 쉽게 찾아지지는 않는다.
+
+```ts
+/**
+ * Scroll the frame to the highlight for an annotation.
+ */
+scrollToAnnotation(ann: Annotation) {
+  ...
+  guest.call('scrollToAnnotation', ann.$tag);
+}
+```
+
+guest를 어디에서 생성하는지 따라가 볼 수도 있지만 여기에서는 'scrollToAnnotation'를 검색해서 점프가 가능할 것 같다.
+
+... >>> src/annotator/guest.ts
+
+```ts
+this._hostRPC.on('scrollToAnnotation', (tag: string) => {
+  this._scrollToAnnotation(tag);
+});
+
+...
+
+private async _scrollToAnnotation(tag: string) {
+  ...
+  await this._scrollToAnchor(anchor);
+}
+
+...
+
+private async _scrollToAnchor(anchor: Anchor) {
+  ...
+    await this._integration.scrollToAnchor(anchor);
+  }
+}
+```
+
+scrollToAnchor 메서드는 세 군데에 선언되어 있는데 각 파일의 이름은 html.ts, pdf.tsx, vitalsource.ts이다. 딱 봐도 html.ts가 정답이다.
+
+... >>> src/annotator/integrations/html.ts
+
+```ts
+async scrollToAnchor(anchor: Anchor) {
+  ...
+  await scrollElementIntoView(highlight);
+}
+```
+
+파일 이름이 scroll.ts인 걸 보니 마침내 종착점에 도착했다. 이럴 거면 그냥 scrollIntoView를 바로 검색해 볼 걸 그랬다. 그래도 컨트리뷰터 분들이 이름을 단 하나도 허투루 짓지 않는다는 걸 뼈저리게 느꼈고 전반적으로 코드 구경을 한 것에 만족한다.
+
+... > src/annotator/util/scroll.ts
+
+```ts
+/**
+ * Smoothly scroll an element into view.
+ */
+export async function scrollElementIntoView(
+  ...
+  await new Promise(resolve =>
+    scrollIntoView(element, { time: maxDuration }, resolve),
+  );
+}
+```
+
+### 4. 코드 읽고 해석하기
+
+위치는 찾았으니 스크롤 하기 직전에 details 태그를 펼쳐주는 코드를 추가할 차례다.
+
+하지만 그 전에 당연한 얘기지만 코드를 잘 읽고 이해하는 것이 먼저다. 손님의 입장에서 예의를 지키고 기존 컨트리뷰터들의 컨벤션을 파악해 잘 따라보자.
+
+```ts
+/**
+ * Smoothly scroll an element into view.
+ */
+export async function scrollElementIntoView(
+  element: HTMLElement,
+  /* istanbul ignore next - defaults are overridden in tests */
+  { maxDuration = 500 }: DurationOptions = {}
+): Promise<void> {
+  // Make the body's `tagName` return an upper-case string in XHTML documents
+  // like it does in HTML documents. This is a workaround for
+  // `scrollIntoView`'s detection of the <body> element. See
+  // https://github.com/KoryNunn/scroll-into-view/issues/101.
+  const body = element.closest("body");
+  if (body && body.tagName !== "BODY") {
+    Object.defineProperty(body, "tagName", {
+      value: "BODY",
+      configurable: true,
+    });
+  }
+
+  await new Promise((resolve) =>
+    scrollIntoView(element, { time: maxDuration }, resolve)
+  );
+}
+```
+
+1. 필요한 경우 주석을 달았다.
+2. HTML 태그를 찾아 저장할 때 태그명을 그대로 변수명으로 사용했다.
+3. HTML 태그의 어트리뷰트를 확인할 때 ?. 연산자를 사용하지 않고 && 연산자를 사용했다.
+
+매우 간단한 코드를 추가할 예정이므로 이 정도만 살펴봐도 될 것 같다.
+
+### 5. 문제 해결하기
+
+이제 코딩 시간이다. 부모 엘리먼트에 details 태그가 있는지 확인하고 open 어트리뷰트를 가지고 있지 않으면, 즉 열려 있지 않으면 open 어트리뷰트를 설정해 상세 내용이 펼쳐져 보이도록 해야 한다. 다음과 같이 scrollIntoView 메서드를 호출하는 Promise 바로 위에 코드를 추가하고 역할에 대해 주석을 달았다.
+
+```ts
+// Ensure that the details are open before scrolling, in case the annotation
+// is within the details tag. This guarantees that the user can promptly view
+// the content on the screen.
+const details = element.closest("details");
+if (details && !details.hasAttribute("open")) {
+  details.setAttribute("open", "");
+}
+
+await new Promise((resolve) =>
+  scrollIntoView(element, { time: maxDuration }, resolve)
+);
+```
+
+재빌드한 다음 스크롤 문제가 더 이상 발생하지 않는 것을 확인했다.
+
+![버그 해결](/posts/contribute-to-hypothesis/버그_해결.gif)
+
+### 6. 테스트 작성하기
+
+오픈소스마다 다르지만 테스트를 요구하는 경우가 꽤 있다. 내 경우에는 미처 테스트를 생각하지 못하고 바로 PR을 올렸다가 Codecov 리포트에서 테스트 커버리지가 낮아진 것을 확인하고 자발적으로 테스트를 작성하겠다고 메인테이너에게 이야기해서 순서가 뒤바뀌게 되었다.
+
+![Codecov 리포트](/posts/contribute-to-hypothesis/Codecov_리포트.png)
+
+![테스트 코드리뷰](/posts/contribute-to-hypothesis/테스트_코드리뷰.png)
+
+테스트 파일은 보통 test 폴더에 모여 있다. scroll.ts와 동일한 레벨에 위치한 test 폴더를 열어보니 scroll-test.js 파일을 찾을 수 있었다.
+
+```
+util
+├── test
+│   └── scroll-test.js
+└── scroll.ts
+```
+
+실무에서 테스트 코드를 작성한 경험이 없어 걱정했지만 주변 코드를 토대로 그럭저럭 첫 번째 테스트 코드를 완성하게 되었다.
+
+```ts
+it("scrolls element into view when the target is within the details tag", async () => {
+  const container = document.createElement("div");
+  const details = document.createElement("details");
+  container.append(details);
+
+  const summary = document.createElement("summary");
+  summary.append("Summary");
+  details.append(summary);
+
+  const target = document.createElement("div");
+  target.style.height = "20px";
+  target.style.width = "100px";
+  details.append(target);
+
+  await scrollElementIntoView(target, { maxDuration: 1 });
+
+  const containerRect = container.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+
+  assert.isTrue(containerRect.top <= targetRect.top);
+  assert.isTrue(containerRect.bottom >= targetRect.bottom);
+});
+```
+
+테스트를 실행하기 위해 어떤 명령어를 실행해야 하는지 확인하기 위해 다시 [개발자 가이드](https://h.readthedocs.io/projects/client/en/latest/developers/developing.html#running-the-tests)를 읽어보았다.
+
+> Hypothesis uses Karma and mocha for testing. To run all the tests once, run:
+>
+> ```sh
+> make test
+> ```
+>
+> You can filter the tests which are run by running yarn test --grep \<pattern\\>. Only test files matching the regex \<pattern\\> will be executed.
+
+#### 트러블슈팅 4: karma headless chrome
+
+가이드대로 명령어를 실행했는데 또다시 에러가 발생했다. 슬슬 문서가 좀 불친절하구나 하는 생각이 든다. 실제로 오픈소스에서 신규 사용자와 기여자를 유치하는 데에는 문서화가 얼마나 잘 되어 있는지도 꽤 중요하다고 한다.
+
+> 23 09 2023 22:28:14.299:INFO [karma-server]: Karma v6.4.2 server started at ...
+> ...
+> 23 09 2023 22:28:14.306:ERROR [launcher]: No binary for ChromeHeadless browser on your platform.
+> Please, set "CHROME_BIN" env variable.
+
+package.json에서 karma 패키지를 찾아보니 karma-chrome-launcher가 딱 눈에 들어온다.
+
+> "karma": "^6.4.2",
+> "karma-chai": "^0.1.0",
+> "karma-chrome-launcher": "^3.2.0",
+
+[karma-chrome-launcher](https://github.com/karma-runner/karma-chrome-launcher) 레포에서 README를 읽어보니 karma.conf.js라는 파일에서 테스트를 수행할 브라우저를 설정할 수 있다고 한다.
+
+프로젝트의 karma.config.js 파일에서는 ChromeHeadless만 단독으로 설정되어 있는데 README와 조합해서 이해한 바로는 puppeteer 설치가 필요하다.
+
+> ```sh
+> $ npm i -D puppeteer karma-chrome-launcher
+> ```
+
+> ```js
+> // karma.conf.js
+> process.env.CHROME_BIN = require("puppeteer").executablePath();
+>
+> module.exports = function (config) {
+>   config.set({
+>     browsers: ["ChromeHeadless"],
+>   });
+> };
+> ```
+
+puppeteer를 설치하고 CHROME_BIN 환경변수를 설정하고 다시 한번 테스트 명령어를 실행했다. 그런데 뭐가 문제인지 또 에러가 발생한다.
+
+> 23 09 2023 23:52:05.337:ERROR [launcher]: Cannot start ChromeHeadless
+
+생각해보니 꼭 headless로 실행할 필요가 없을 것 같다. 이미 크롬이 설치되어 있는데 그냥 그걸 활용하자 싶어 아래와 같이 설정을 변경하고 환경 변수로는 로컬의 chrome 경로를 찾아 설정해 주었다.
+
+```sh
+export CHROME_BIN='/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe'
+```
+
+```js
+// karma.config.js
+module.exports = function (config) {
+  config.set({
+    browsers: ["Chrome"],
+  });
+};
+```
+
+오류 없이 브라우저가 자동 실행되면서 3000개가 넘는 테스트가 수행되었다.
+
+![테스트 수행 결과](/posts/contribute-to-hypothesis/테스트_수행_결과.png)
+
+아니 그런데 너무 많다. 내가 작성한 테스트의 결과만 보고 싶으니 가이드에서 알려준 대로 원하는 파일만 지정해서 테스트해 보자.
+
+> ```sh
+>  yarn test --grep **/scroll-test.js
+> ```
+
+![신규 추가 테스트 결과](/posts/contribute-to-hypothesis/신규_추가_테스트_결과.png)
+
+테스트가 통과하는 것을 확인했으니 커밋해서 올렸다. 이후 테스트 코드를 리뷰 받고 나자 100% 커버리지를 회복할 수 있었다.
+
+![Codecov 리포트 갱신](/posts/contribute-to-hypothesis/Codecov_리포트_갱신.png)
+
+### 7. PR 작성하기
+
+테스트 코드까지 모두 완성해서 브랜치에 올렸다면 이제 PR을 작성할 시간이다. 디폴트 브랜치에 자신의 작업 브랜치를 머지하는 PR을 열어보자.
+
+![PR 브랜치](/posts/contribute-to-hypothesis/PR_브랜치.png)
+
+템플릿을 제공하는 경우에는 가이드를 따라 작성하면 되지만 템플릿이 없는 경우에는 어떻게 해야 할까? 이전에 작성된 PR을 살펴보고 상황에 맞게 따라 하면 된다. 버그 리포트이기 때문에 이슈가 발생한 상황을 Description에 설명하고 Changes Made에는 작업한 내용을 설명하는 형식을 채택했다. 또한, 리뷰어의 이해를 돕기 위한 동영상도 첨부했다.
+
+자세한 PR은 [여기](https://github.com/hypothesis/client/pull/5701)에서 확인할 수 있다. 참고로 PR을 영작할 때 [DeepL](https://www.deepl.com/translator)이라는 번역기의 도움을 많이 받았다.
+
+![PR 내용](/posts/contribute-to-hypothesis/PR_내용.png)
+
+### 8. 코드 리뷰에 피드백하고 승인받기
+
+가장 기대되는 파트다. 이런 기회가 아니면 언제 오픈소스 메인테이너에게 코드 리뷰를 받을 수 있을까?
+
+![코드리뷰 1](/posts/contribute-to-hypothesis/코드리뷰_1.png)
+
+![코드리뷰 2](/posts/contribute-to-hypothesis/코드리뷰_2.png)
+
+![코드리뷰 3](/posts/contribute-to-hypothesis/코드리뷰_3.png)
+
+얼마 지나지 않아 메인테이너에게 답변을 받았고 사소한 수정 사항이 있어 빠르게 반영했다. 작업한 코드가 워낙 심플해서 리뷰는 이대로 끝일 줄 알았으나 6번에서 말했듯이 뒤늦게 올린 테스트 코드에서 추가적인 지적을 받게 되었다.
+
+![코드리뷰 4](/posts/contribute-to-hypothesis/코드리뷰_4.png)
+
+![코드리뷰 5](/posts/contribute-to-hypothesis/코드리뷰_5.png)
+
+이 외에도 받은 몇몇 조언에 따라 코드를 수정했다. 결과적으로 @robertknight와 @acelaya 두 분 덕분에 탈이 많았던 테스트 코드가 아래와 같이 심플하게 정리되었다. 즉, 스크롤 전후로 details 태그가 open 상태인지 확인한다.
+
+```ts
+it("opens containing `<details>` tag to make content visible", async () => {
+  const container = createContainer();
+  const details = document.createElement("details");
+  container.append(details);
+
+  const summary = document.createElement("summary");
+  summary.append("Summary");
+  details.append(summary);
+
+  const target = document.createElement("div");
+  details.append(target);
+
+  assert.isFalse(details.open);
+  await scrollElementIntoView(target, { maxDuration: 1 });
+  assert.isTrue(details.open);
+});
+```
+
+오픈소스 메인테이너들은 보통 본업이 따로 있는 경우가 많아 확인이 늦어지곤 한다. 조급해하지 말고 지적받은 부분을 고쳐서 올리고 코멘트를 주고받다 보면 어느 순간 메인테이너의 승인을 받을 수 있다.
+
+![메인테이너 PR 승인](/posts/contribute-to-hypothesis/메인테이너_PR_승인.png)
+
+### 9. 메인 브랜치에 병합 및 릴리즈 되기
+
+이제부터는 인내심만 가지고 기다리면 된다. 보통 다른 PR과 함께 다음 버전에 포함되므로 짧으면 며칠에서 길면 몇 주가 지나면 어느 순간 PR이 머지되어 기분 좋은 보라색 아이콘으로 바뀐 것을 발견할 수 있다.
+
+![릴리즈 대기](/posts/contribute-to-hypothesis/릴리즈_대기.png)
+
+[v1.1336.0 릴리즈 노트](https://github.com/hypothesis/client/releases/tag/v1.1336.0)에 본인의 이슈 넘버가 포함되었는지 확인해보자.
+
+![릴리즈 노트](/posts/contribute-to-hypothesis/릴리즈_노트.png)
+
+당시에 익스텐션은 따로 확인하지 않아 이제야 버전을 살펴보았는데 어느새 1.1350.0.3까지 업데이트되었다. 물론 최신 버전에서는 스크롤 이슈가 해결된 것을 확인할 수 있었다. 🎉
+
+![익스텐션 버전](/posts/contribute-to-hypothesis/익스텐션_버전.png)
+
+## 시간을 들인 가치가 있었나?
+
+1. 현재 진행 중인 [React 레퍼런스 스터디](https://github.com/read-with-us/react-docs-reference)에서 잘 사용 중이다. 이전 스터디에서 팀원들과 함께 사용할 때 스크롤 문제로 불편함을 겪었는데 이렇게 직접 버그를 고치고 나니 어깨가 으쓱한다.
+
+2. link 명령어를 알게 된 덕분에 실무에서 내부 라이브러리 패키지를 수정할 때 유용하게 써먹었다. 매번 수정하고 결과를 확인하기 위해 1) 빌드해서 2) 배포한 다음 사용하는 서비스에서 3) 버전을 업그레이드했는데 link 명령어 덕분에 불필요한 과정을 두 단계 뛰어넘을 수 있었다.
+
+3. 처음으로 테스트 코드를 작성해 보았다. 회사 서비스에 테스트 코드가 한 줄도 없다 보니 도입은 엄두에도 못 내고 있었는데 이미 환경이 갖춰진 상태에서 하나의 테스트를 추가하는 것이라 상대적으로 수월했다.
+
+4. 소스 코드를 쭉 살펴보다가 gRPC라는 한 번쯤 이름을 들어본 기술을 사용하는 것을 알게 되었다. 굉장히 멀게 느꼈던 기술인데 궁금해져서 [gRPC 사이트](https://grpc.io/)에도 한 번 들어가 보았다. 분산 서비스를 위한 기술 같은데 hypothesis를 브라우저 익스텐션으로만 생각했다가 새삼 다시 보게 되었다.
+
+## 마치며
+
+글을 적다 보니 양이 많아 깜짝 놀랐다. 코드 몇 줄 추가하고 싶었을 뿐인데 프로젝트 설정하는 부분이 낯설어 시행착오도 많이 했고 한참 헤맸다. 물론 다른 컨트리뷰터에게 도움을 요청했다면 훨씬 빠르게 해결했겠지만 급할 것이 없으니 천천히 가더라도 내 힘으로 해결하고 싶었다. 하지만 만약 설정하다가 내 역량으로 계속 나아가기 어렵다고 느꼈다면 직접 문의했을 것이고 분명 도움을 받을 수 있었을 것이다.
+
+혹여라도 이 글을 읽고 나서 오픈소스 기여가 너무 어렵다고 여기지는 않았으면 한다. 이 오픈소스는 유명한 편이 아니기 때문에 신규 기여자를 위해 친절하게 문서화되어 있지 않았다고 생각한다. 하지만 기여자들에게 커뮤니티는 항상 열려 있다. 보통 README에 컨택할 수 있는 링크가 공유되어 있으므로 디스코드 같은 커뮤니티에 참여해 컨트리뷰터들과 실시간으로 소통해 보는 것도 매우 흥미로운 경험이 될 것이다.
+
+> 오픈소스에 기여한다는 게 생각보다는 쉽고 또 생각보다는 어려웠습니다. 그래도 누군가에게 이 경험이 도움이 되길 바라며 궁금하신 점이 있다면 편하게 문의주세요!

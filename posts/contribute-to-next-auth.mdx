@@ -1,0 +1,81 @@
+---
+title: next-auth 오픈 소스에 기여하기
+description: OAuth 프로토콜을 따르게 되면 사용자는 한 서비스(Provider)에서 다른 서비스(Consumer)로 자신이 공유하길 원하는 정보를 안전하게 넘겨줄 수 있게 된다. OAuth의 대표적인 케이스인 소셜 로그인 구현을 돕는 NextAuth를 알아보자.
+date: 2022-05-01
+thumbnail: thumbnail.png
+---
+
+## OAuth
+
+### OAuth 2.0 프로토콜
+
+> OAuth 2.0 is the industry-standard protocol for authorization. OAuth 2.0 focuses on client developer simplicity while providing specific authorization flows for web applications, desktop applications, mobile phones, and living room devices. This specification and its extensions are being developed within the IETF OAuth Working Group.
+>
+> by [OAuth](https://oauth.net/2/)
+
+클라이언트 개발자들은 업계 표준 프로토콜인 OAuth를 통해 표준화된 인가 방식을 따르게 되면서 고유한 서비스 개발에 집중할 수 있게 되었다. 이 시리즈에서는 2.0 버전에 대한 간단한 소개와 함께 OAuth 기반의 소셜 로그인 방법을 알아보고자 한다.
+
+OAuth 공식 페이지에서는 아래 그림과 함께 [프로토콜의 흐름](https://datatracker.ietf.org/doc/html/rfc6749#section-1.2)에 대해 설명하고 있다. 여기서 4개의 [역할들](https://datatracker.ietf.org/doc/html/rfc6749#section-1.1)이 등장하는데 먼저, Client는 사용자를 대신해 보호받는 리소스에 대한 권한을 요청하는 어플리케이션이고 Resource Owner는 그 권한을 부여하는 사용자이다. 또한, Authorization Server는 사용자 인증이 성공하면 액세스 토큰을 발급하는 서버이고 Resource Server는 이 토큰을 전달받아 보호받는 리소스를 반환해주는 서버이다.
+![추상적인 프로토콜 흐름](/posts/contribute-to-next-auth/추상적인_프로토콜_흐름.png)
+
+(A) Client는 Resource Owner에게 권한을 요청한다. 현재 이 글을 쓰고 있는 velog에서도 깃허브 등 소셜 로그인을 제공하는데 아래 이미지와 같이 사용자는 GitHub에 로그인하고 velog에서 요청하는 권한을 허용할 수 있다.
+![소셜 로그인 및 권한 부여](/posts/contribute-to-next-auth/소셜_로그인_및_권한_부여.png)
+
+(B) Client는 요청한 권한을 부여받는다. 보통 소셜 로그인에서는 Redirect URL을 통해 Authorization Code를 발급받는 방식을 사용하는데 이러한 허가 방식에는 여러 유형이 있으므로 이에 대해 자세히 알고 싶다면 [Grant Types](https://oauth.net/2/grant-types/authorization-code/) 문서를 참고하면 된다.
+
+(C) Client는 Authorization Server에 액세스 토큰을 요청한다. Authorization Code를 발급받은 경우 이를 전달하면 된다.
+
+(D) Authorization Server는 권한 부여가 유효한지 확인하고 유효하면 액세스 토큰을 발급한다.
+
+(E) Client는 Resource Server에 보호받고 있는 리소스를 요청하고 액세스 토큰을 제시하여 인증받는다.
+
+(F) Resource Server는 액세스 토큰이 유효한지 확인하고 유효하면 요청받은 리소스를 반환한다.
+
+### 왜 OAuth인가
+
+> This is the problem OAuth solves. It allows you, the User, to grant access to your private resources on one site (which is called the Service Provider), to another site (called Consumer, not to be confused with you, the User). While OpenID is all about using a single identity to sign into many sites, OAuth is about giving access to your stuff without sharing your identity at all (or its secret parts).
+>
+> by [OAuth](https://oauth.net/about/introduction/)
+
+그렇다면 OAuth를 왜 사용해야 할까? 오늘날 많은 서비스들은 다른 서비스의 기능을 연결하여 자신의 서비스에서 제공하는 기능을 한층 풍성하게 만든다. OAuth가 등장하기 전에는 다른 서비스와 연결을 원하는 사용자에게 서비스마다 제각각의 방법으로 권한을 요구했다. 다른 서비스의 아이디와 패스워드를 요구하는 경우 사용자는 자신의 계정에 대한 모든 권한을 넘겨주게 되고 이는 보안상의 위험이나 계정에 대한 상실로 이어질 수 있다.
+
+반면에 OAuth 프로토콜을 따르게 되면 사용자는 한 서비스(Provider)에서 다른 서비스(Consumer)로 자신이 공유하길 원하는 정보를 안전하게 넘겨줄 수 있게 된다. 이 시리즈에서 살펴볼 소셜 로그인은 대표적인 활용 케이스로 사용자는 소셜 로그인을 통해 원하는 서비스에 편리하게 가입하고 로그인할 수 있다.
+
+## NextAuth.js
+
+OAuth는 2.0 버전으로 올라가면서 1.0 보다 쉬운 구현 방법을 제공하고 있지만 서비스를 개발하기에 바쁜 개발자들이 일일이 구현하기에는 시간이 소요된다. 만약 Next.js 프레임워크를 사용해서 개발 중이라면 NextAuth를 사용해서 손쉽고 빠르게 소셜 로그인 기능을 개발할 수 있다.
+
+> If you have an existing database with user data, you'll likely want to utilize an open-source solution that's provider agnostic.
+> If you want a full-featured authentication system with built-in providers (Google, Facebook, GitHub…), JWT, JWE, email/password, magic links and more… use next-auth.
+>
+> by [Next.js](https://nextjs.org/docs/authentication#bring-your-own-database)
+
+Next.js 공식 페이지에서는 소셜 로그인(구글, 페이스북, 카카오, 네이버 등) 기능을 원한다면 NextAuth를 사용하는 것을 추천하고 있다. 많은 기능과 장점들을 갖추고 있으니 찬찬히 문서를 둘러보고 원하는 대로 사용하면 된다.
+
+> Flexible and easy to use
+
+- Designed to work with any OAuth service, it supports OAuth 1.0, 1.0A, 2.0 and OpenID Connect
+- Built-in support for many popular sign-in services
+- Supports email / passwordless authentication
+- Supports stateless authentication with any backend (Active Directory, LDAP, etc)
+- Supports both JSON Web Tokens and database sessions
+- Designed for Serverless but runs anywhere (AWS Lambda, Docker, Heroku, etc…)
+  > by [NextAuth.js](https://next-auth.js.org/getting-started/introduction)
+
+### 오픈소스 기여
+
+사실 이렇게 추천하는 이유에는 약간의 😈사심이 있는데 NextAuth를 사용하는 과정에서 처음으로 오픈소스에 기여하게 되었기 때문이다!
+
+#### redirect callback 문서 수정
+
+원하는 정보를 세션에 추가하기 위해 문서를 닳도록 보다가 redirect 콜백함수에 async 키워드가 누락된 것을 찾아내고 [PR](https://github.com/nextauthjs/next-auth/pull/4361)을 날렸다. 사소하지만 최초로 날린 PR이라 의미가 있다.
+
+![콜백 문서 수정 코드리뷰](/posts/contribute-to-next-auth/콜백_문서_수정_코드리뷰.png)
+
+#### 카카오 프로바이더 reference error 관련 코드 수정
+
+카카오 소셜 로그인 개발 중 profile 객체가 없음에도 불구하고 nickname을 참조하는 오류를 발견했고 부끄럽지만 처음으로 node_modules에 들어가 코드를 살펴보게 되었다. 다행히 단순한 객체 프로퍼티 접근 오류라서 원인을 파악하고 두근거리는 마음으로 fork한 다음 [PR](https://github.com/nextauthjs/next-auth/pull/4365)을 올렸다.
+
+메인테이너분이 approve 하면서 친절하게 관련 링크를 남겨주었는데 원래라면 타입스크립트에서 잡아내야 하는 오류인데 타입에 문제가 있어 PR을 올렸다는 내용이었다. 다음에는 문제를 더 본질적으로 해결할 수 있기를 바란다.
+
+![카카오 reference 에러 코드 수정 코드리뷰](/posts/contribute-to-next-auth/카카오_reference_에러_코드_수정_코드리뷰.png)
