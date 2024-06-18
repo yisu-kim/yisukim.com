@@ -1,5 +1,5 @@
-import { getPostData } from "@/service/posts";
-import Post from "@/components/post";
+import { getPostData } from "@/services/posts";
+import PostContent from "@/components/post-content";
 
 type Props = {
   params: {
@@ -11,5 +11,5 @@ export default async function PostPage({ params: { slug } }: Props) {
   // TODO: Add exception handling
   const post = await getPostData(slug);
 
-  return <Post slug={slug} post={post} />;
+  return <PostContent slug={slug} post={post} />;
 }

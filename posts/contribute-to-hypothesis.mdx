@@ -223,12 +223,11 @@ Developer mode라는 게 있다는 걸 처음 알았다. 모드를 활성화하�
 
 서버 레포를 수정하는 것이 아니므로 그냥 프로덕션 서버를 바라보아도 무방하다. chrome-prod.json 파일을 살펴보니 역시나 apiUrl이 프로덕션 도메인을 가리키고 있다.
 
-```
+```json
 {
   "buildType": "production",
   "manifestV3": true,
   "key": "{key 값}",
-
 
   "apiUrl": "https://hypothes.is/api/",
   "authDomain": "hypothes.is",
@@ -248,7 +247,7 @@ Developer mode라는 게 있다는 걸 처음 알았다. 모드를 활성화하�
 
 > To build the extension from a different settings file, provide a SETTINGS_FILE path to make build:
 >
-> ```
+> ```sh
 > $ make build SETTINGS_FILE=settings/chrome-prod.json
 > ```
 
@@ -280,7 +279,7 @@ src/sidebar/index.tsx > HypothesisApp.tsx > SidebarView.tsx > ThreadList.tsx
 
 ... > ThreadList.tsx > ThreadCard.tsx > Card.tsx
 
-```ts
+```tsx
 <Card
   onClick={e => {
     // Prevent click events intended for another action from
@@ -329,8 +328,7 @@ private async _scrollToAnnotation(tag: string) {
 
 private async _scrollToAnchor(anchor: Anchor) {
   ...
-    await this._integration.scrollToAnchor(anchor);
-  }
+  await this._integration.scrollToAnchor(anchor);
 }
 ```
 
@@ -353,7 +351,7 @@ async scrollToAnchor(anchor: Anchor) {
 /**
  * Smoothly scroll an element into view.
  */
-export async function scrollElementIntoView(
+export async function scrollElementIntoView(...) {
   ...
   await new Promise(resolve =>
     scrollIntoView(element, { time: maxDuration }, resolve),

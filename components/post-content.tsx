@@ -1,20 +1,20 @@
 import Image from "next/image";
 
-import { SerializedPost } from "@/service/posts";
-import MdxViewer from "@/components/mdx-viewer";
+import { PostData } from "@/services/posts";
 
 type Props = {
   slug: string;
-  post: SerializedPost;
+  post: PostData;
 };
 
-export default function Post({ slug, post }: Props) {
+export default function PostContent({ slug, post }: Props) {
   const {
+    content,
     frontmatter: { title, date, thumbnail },
   } = post;
 
   return (
-    <article className="prose max-w-full p-4">
+    <article className="prose prose-quoteless max-w-full p-4">
       {thumbnail && (
         <Image
           className="w-full mb-6 rounded-xl border"
@@ -25,13 +25,13 @@ export default function Post({ slug, post }: Props) {
         />
       )}
       <section className="flex flex-col">
-        <h1 className="mb-2">{title}</h1>
+        <h1>{title}</h1>
         <time className="self-end text-sm text-gray-500">
           {date.toString()}
         </time>
-        <hr className="my-6" />
-        <MdxViewer source={post} />
-        <hr className="my-6" />
+        <hr className="mt-6" />
+        {content}
+        <hr />
       </section>
     </article>
   );

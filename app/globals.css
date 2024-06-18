@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 
+* Highlighter with rehype-pretty-code
+*/
+
+[data-rehype-pretty-code-figure] {
+  @apply my-2 not-italic;
+}
+
+[data-rehype-pretty-code-figure]:has(> [data-rehype-pretty-code-title]) pre {
+  @apply border-t-0 rounded-t-none;
+}
+
+[data-rehype-pretty-code-title] {
+  @apply border border-gray-200 bg-gray-100 rounded-t-lg py-3 px-4 text-sm text-gray-500;
+}
+
+[data-rehype-pretty-code-figure] pre {
+  @apply px-2 py-2 border border-gray-200 rounded-lg;
+}
+
+[data-rehype-pretty-code-figure] code {
+  @apply px-2 py-1 overflow-x-auto;
+}
+
+[data-line-numbers] {
+  counter-reset: line;
+}
+
+[data-line-numbers] > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+
+  @apply inline-block w-4 mr-4 text-right text-gray-400;
+}
+
+[data-line] {
+  @apply px-1;
+}
+
+[data-highlighted-line] {
+  @apply bg-yellow-100 bg-opacity-70;
+}
+
+[data-highlighted-chars] {
+  @apply px-1.5 py-0.5 bg-yellow-100 bg-opacity-70;
+}

@@ -1,0 +1,24 @@
+---
+title: 샘플
+description: 샘플 코드 블럭
+date: 2024-06-18
+---
+
+> To build the extension from a different settings file, provide a SETTINGS_FILE path to make build:
+>
+> ```sh title="제목이 있어요" /make/1
+> $ make build SETTINGS_FILE=settings/chrome-prod.json
+> ```
+
+```tsx title="abc" showLineNumbers {1-2,4,6}
+<Card
+  onClick={e => {
+    // Prevent click events intended for another action from
+    // triggering a page scroll.
+    if (!isFromButtonOrLink(e.target as Element) && thread.annotation) {
+      scrollToAnnotation(thread.annotation);
+    }
+  }}
+  ...
+/>
+```
