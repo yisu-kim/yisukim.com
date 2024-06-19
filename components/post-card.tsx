@@ -1,14 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { PostMetaData } from "@/services/posts";
+import { Frontmatter } from "@/services/post-mdx";
 
 type Props = {
-  post: PostMetaData;
+  slug: string;
+  frontmatter: Frontmatter;
 };
 
 export default function PostCard({
-  post: { slug, title, description, date, thumbnail },
+  slug,
+  frontmatter: { title, description, date, thumbnail },
 }: Props) {
   return (
     <Link href={`/posts/${slug}`}>

@@ -1,17 +1,17 @@
 import Image from "next/image";
 
-import { PostData } from "@/services/posts";
+import { getPost } from "@/services/post";
 
 type Props = {
   slug: string;
-  post: PostData;
 };
 
-export default function PostContent({ slug, post }: Props) {
+export default async function PostContent({ slug }: Props) {
+  // TODO: Add exception handling
   const {
-    content,
+    default: Post,
     frontmatter: { title, date, thumbnail },
-  } = post;
+  } = await getPost(slug);
 
   return (
     <article className="prose prose-quoteless max-w-full p-4">
@@ -30,7 +30,7 @@ export default function PostContent({ slug, post }: Props) {
           {date.toString()}
         </time>
         <hr className="mt-6" />
-        {content}
+        <Post />
         <hr />
       </section>
     </article>
