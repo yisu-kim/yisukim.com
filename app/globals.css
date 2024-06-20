@@ -2,10 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-* Highlighter with rehype-pretty-code
-*/
-
+/* rehype-pretty-code */
 [data-rehype-pretty-code-figure] {
   @apply my-2 not-italic;
 }
@@ -47,4 +44,14 @@
 
 [data-highlighted-chars] {
   @apply px-1.5 py-0.5 bg-yellow-100 bg-opacity-70;
+}
+
+/* rehype-autolink-headings */
+a.heading-anchor {
+  @apply no-underline hover:underline;
+}
+
+a.heading-anchor::after {
+  content: "#";
+  @apply hidden hover:inline-block ml-2 text-gray-300;
 }

@@ -1,9 +1,16 @@
+import { PropsWithChildren } from "react";
 import * as runtime from "react/jsx-runtime";
 
 import { EvaluateOptions, evaluate } from "@mdx-js/mdx";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import rehypePrettyCode from "rehype-pretty-code";
+import rehypePrettyCode, {
+  Options as RehypePrettyCodeOptions,
+} from "rehype-pretty-code";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings, {
+  Options as RehypeAutolinkHeadingsOptions,
+} from "rehype-autolink-headings";
 
 export type Frontmatter = {
   title: string;
@@ -24,21 +31,31 @@ export async function getPostMDX(source: string) {
   };
 }
 
-/** @type {import('rehype-pretty-code').Options} */
-const rehypePrettyCodeOptions = {
+const rehypePrettyCodeOptions: RehypePrettyCodeOptions = {
   keepBackground: false,
   defaultLang: "plaintext",
   theme: "catppuccin-latte",
 };
 
+const rehypeAutolinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
+  behavior: "wrap",
+  properties: {
+    className: ["heading-anchor"],
+  },
+};
+
 const evaluateOptions = {
   ...runtime,
   remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
-  rehypePlugins: [[rehypePrettyCode, rehypePrettyCodeOptions]],
+  rehypePlugins: [
+    [rehypePrettyCode, rehypePrettyCodeOptions],
+    rehypeSlug,
+    [rehypeAutolinkHeadings, rehypeAutolinkHeadingsOptions],
+  ],
 };
 
 const components = {
-  figure: (props: any) => (
+  figure: (props: PropsWithChildren) => (
     <figure
       {...props}
       className={
