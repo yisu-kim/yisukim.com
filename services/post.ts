@@ -1,8 +1,9 @@
+import { Locale } from "@/i18n-config";
 import { getAllPostSource, getPostSource } from "./post-source";
 import { getPostMDX } from "./post-mdx";
 
-export async function getAllPost() {
-  const sources = await getAllPostSource();
+export async function getAllPost(lang: Locale) {
+  const sources = await getAllPostSource(lang);
   const allPost = await Promise.all(
     sources.map(async ({ slug, content }) => {
       const post = await getPostMDX(content);
@@ -14,8 +15,8 @@ export async function getAllPost() {
   );
 }
 
-export async function getPost(slug: string) {
-  const { content } = await getPostSource(slug);
+export async function getPost(lang: Locale, slug: string) {
+  const { content } = await getPostSource(lang, slug);
   const post = await getPostMDX(content);
   return { slug, ...post };
 }

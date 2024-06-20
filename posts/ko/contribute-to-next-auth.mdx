@@ -16,10 +16,10 @@ thumbnail: thumbnail.png
 클라이언트 개발자들은 업계 표준 프로토콜인 OAuth를 통해 표준화된 인가 방식을 따르게 되면서 고유한 서비스 개발에 집중할 수 있게 되었다. 이 시리즈에서는 2.0 버전에 대한 간단한 소개와 함께 OAuth 기반의 소셜 로그인 방법을 알아보고자 한다.
 
 OAuth 공식 페이지에서는 아래 그림과 함께 [프로토콜의 흐름](https://datatracker.ietf.org/doc/html/rfc6749#section-1.2)에 대해 설명하고 있다. 여기서 4개의 [역할들](https://datatracker.ietf.org/doc/html/rfc6749#section-1.1)이 등장하는데 먼저, Client는 사용자를 대신해 보호받는 리소스에 대한 권한을 요청하는 어플리케이션이고 Resource Owner는 그 권한을 부여하는 사용자이다. 또한, Authorization Server는 사용자 인증이 성공하면 액세스 토큰을 발급하는 서버이고 Resource Server는 이 토큰을 전달받아 보호받는 리소스를 반환해주는 서버이다.
-![추상적인 프로토콜 흐름](/posts/contribute-to-next-auth/추상적인_프로토콜_흐름.png)
+![추상적인 프로토콜 흐름](/static/posts/contribute-to-next-auth/추상적인_프로토콜_흐름.png)
 
 (A) Client는 Resource Owner에게 권한을 요청한다. 현재 이 글을 쓰고 있는 velog에서도 깃허브 등 소셜 로그인을 제공하는데 아래 이미지와 같이 사용자는 GitHub에 로그인하고 velog에서 요청하는 권한을 허용할 수 있다.
-![소셜 로그인 및 권한 부여](/posts/contribute-to-next-auth/소셜_로그인_및_권한_부여.png)
+![소셜 로그인 및 권한 부여](/static/posts/contribute-to-next-auth/소셜_로그인_및_권한_부여.png)
 
 (B) Client는 요청한 권한을 부여받는다. 보통 소셜 로그인에서는 Redirect URL을 통해 Authorization Code를 발급받는 방식을 사용하는데 이러한 허가 방식에는 여러 유형이 있으므로 이에 대해 자세히 알고 싶다면 [Grant Types](https://oauth.net/2/grant-types/authorization-code/) 문서를 참고하면 된다.
 
@@ -70,7 +70,7 @@ Next.js 공식 페이지에서는 소셜 로그인(구글, 페이스북, 카카�
 
 원하는 정보를 세션에 추가하기 위해 문서를 닳도록 보다가 redirect 콜백함수에 async 키워드가 누락된 것을 찾아내고 [PR](https://github.com/nextauthjs/next-auth/pull/4361)을 날렸다. 사소하지만 최초로 날린 PR이라 의미가 있다.
 
-![콜백 문서 수정 코드리뷰](/posts/contribute-to-next-auth/콜백_문서_수정_코드리뷰.png)
+![콜백 문서 수정 코드리뷰](/static/posts/contribute-to-next-auth/콜백_문서_수정_코드리뷰.png)
 
 #### 카카오 프로바이더 reference error 관련 코드 수정
 
@@ -78,4 +78,4 @@ Next.js 공식 페이지에서는 소셜 로그인(구글, 페이스북, 카카�
 
 메인테이너분이 approve 하면서 친절하게 관련 링크를 남겨주었는데 원래라면 타입스크립트에서 잡아내야 하는 오류인데 타입에 문제가 있어 PR을 올렸다는 내용이었다. 다음에는 문제를 더 본질적으로 해결할 수 있기를 바란다.
 
-![카카오 reference 에러 코드 수정 코드리뷰](/posts/contribute-to-next-auth/카카오_reference_에러_코드_수정_코드리뷰.png)
+![카카오 reference 에러 코드 수정 코드리뷰](/static/posts/contribute-to-next-auth/카카오_reference_에러_코드_수정_코드리뷰.png)

@@ -1,17 +1,19 @@
 import Image from "next/image";
 
+import { Locale } from "@/i18n-config";
 import { getPost } from "@/services/post";
 
 type Props = {
+  lang: Locale;
   slug: string;
 };
 
-export default async function PostContent({ slug }: Props) {
+export default async function PostContent({ lang, slug }: Props) {
   // TODO: Add exception handling
   const {
     default: Post,
     frontmatter: { title, date, thumbnail },
-  } = await getPost(slug);
+  } = await getPost(lang, slug);
 
   return (
     <article className="prose prose-quoteless max-w-full p-4">
@@ -19,7 +21,7 @@ export default async function PostContent({ slug }: Props) {
         <Image
           className="w-full mb-6 rounded-xl border"
           alt={title}
-          src={`/posts/${slug}/${thumbnail}`}
+          src={`/static/posts/${slug}/${thumbnail}`}
           width={1200}
           height={600}
         />

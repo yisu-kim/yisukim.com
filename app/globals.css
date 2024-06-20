@@ -53,5 +53,5 @@ a.heading-anchor {
 
 a.heading-anchor::after {
   content: "#";
-  @apply hidden hover:inline-block ml-2 text-gray-300;
+  @apply hidden hover:inline-block w-0 ml-2 text-gray-300;
 }

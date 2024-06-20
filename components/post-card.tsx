@@ -1,24 +1,27 @@
 import Link from "next/link";
 import Image from "next/image";
 
+import { Locale } from "@/i18n-config";
 import { Frontmatter } from "@/services/post-mdx";
 
 type Props = {
+  lang: Locale;
   slug: string;
   frontmatter: Frontmatter;
 };
 
 export default function PostCard({
+  lang,
   slug,
   frontmatter: { title, description, date, thumbnail },
 }: Props) {
   return (
-    <Link href={`/posts/${slug}`}>
+    <Link href={`/${lang}/posts/${slug}`}>
       <article className="h-full border rounded-lg p-4">
         <div className="h-full flex flex-col gap-4">
           <Image
             className="w-full rounded-lg border"
-            src={`/posts/${slug}/${thumbnail}`}
+            src={`/static/posts/${slug}/${thumbnail}`}
             alt={title}
             width={400}
             height={200}
