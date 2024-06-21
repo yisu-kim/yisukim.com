@@ -18,7 +18,9 @@ export default function Footer() {
           <LinkedIn width="1.4em" height="1.4em" />
         </Link>
       </div>
-      <p className="text-sm">© 2024 Yisu Kim · All rights reserved.</p>
+      <p className="text-sm">
+        © {new Date().getFullYear()} Yisu Kim · All rights reserved.
+      </p>
     </footer>
   );
 }

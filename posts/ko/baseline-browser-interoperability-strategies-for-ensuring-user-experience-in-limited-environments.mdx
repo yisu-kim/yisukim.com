@@ -1,0 +1,84 @@
+---
+title: "Baseline: 제한된 환경에서 사용자 경험을 보장하는 브라우저 상호운용성 전략"
+description: 웹 플랫폼의 기능을 바라보는 새로운 방법을 소개합니다.
+date: 2024-06-21
+thumbnail: thumbnail.png
+---
+
+> 상호호환성(compatibility)과 상호운용성(interoperability)은 혼용되어 사용되곤 합니다. 이 글에서 상호운용성이란 두 개 이상의 브라우저에서 일관되게 동작하는 것을 의미합니다.
+
+## 상호운용성과 함께 진화하는 웹 환경
+
+다양한 플랫폼과 장치가 등장하면서 현대 웹 개발 환경에서 상호운용성의 중요성이 커지고 있습니다. 과거에는 주로 데스크탑에 초점을 맞추었다면 이제는 자연스럽게 모바일, 태블릿 등 다양한 플랫폼들까지 고려하는 추세입니다. 또한, 인터넷 익스플로러의 지원이 중단되고 최신 버전으로 자동 업그레이드되는 에버그린 브라우저가 등장함에 따라 더 이상 특정 브라우저 버전에 맞춰 지원하는 방법은 통하지 않습니다.
+
+이러한 상황에서 사용자들에게 일관된 경험을 제공하기 위해서는 각 기능이 여러 브라우저에서 지원되는 범위를 구체적으로 파악해 예기치 못한 이슈를 방지해야 합니다. 이에 따라, 많은 개발자들은 어떤 기능의 사용 여부를 결정할 때 [Can I Use](https://caniuse.com/) 사이트나 [MDN](https://developer.mozilla.org/en-US/)의 브라우저 호환성 표를 참고해 왔습니다. 그 밖에 사용자 브라우저 통계를 분석해 타깃 브라우저를 정하거나 폴리필을 사용해 구형 브라우저에서 지원하지 않는 기능을 보완하기도 했습니다.
+
+하지만 사용자들이 사용하는 다양한 브라우저를 추적해 지원할 기준선을 설정하는 것은 개발 시간과 비용을 증가시켜 일정과 예산에 부담을 줄 수 있습니다. 무엇보다 새로운 프로젝트를 런칭하는 개발자들 또는 라이브러리 개발자들은 잠재 고객들의 브라우저를 직접적으로 파악하는 것이 어렵습니다. 이처럼 접근이 제한되어 있을 때 어디에 기준선을 그어야 할까요?
+
+## Baseline의 등장 배경과 목적
+
+![접근성 interop 대시보드](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/접근성_Interop_대시보드.png)
+
+[2021년 웹 개발자들이 주로 마주하는 난관](https://paul.kinlan.me/top-web-developer-pain-points-in-2021/)을 설문 조사한 글을 살펴보면 전 분기에 걸쳐 브라우저 간 디자인/경험의 일관성을 유지하는 것이 상위 3개 도전 과제 중 하나로 꾸준히 선정되었습니다. 개발자들이 지속적으로 겪는 이와 같은 어려움을 덜기 위해 등장한 것이 Baseline입니다.
+
+대표적인 브라우저 벤더사인 구글, 모질라, 마이크로소프트, 애플은 [Interop](https://github.com/web-platform-tests/interop) 프로젝트를 통해 매년 웹 표준을 위한 노력을 공유하며 상호 운용성을 개선하고 있습니다. Baseline 또한 이러한 기조에서 나오게 된 결과로써 사용하려는 기능이 주요 브라우저에서 안정적으로 지원되는지 개발자들이 한눈에 식별할 수 있도록 돕기 위함입니다.
+
+Baseline에 포함될 기능은 위 벤더사들이 개발하는 브라우저들을 기반으로 결정되며 2023년부터는 모바일 환경도 포함되었습니다.
+
+- 애플 사파리 (iOS/macOS)
+- 모질라 파이어폭스 (Android/데스크탑)
+- 구글 크롬 (Android/데스크탑)
+- 마이크로소프트 엣지 (데스크탑)
+
+## Baseline의 정의와 활용
+
+![Baseline의 두 단계](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/Baseline의_두_단계.png)
+
+Baseline은 다음과 같은 두 가지 단계로 구성됩니다. 이에 대한 더 자세한 사항은 WebDX 커뮤니티 그룹에서 작성한 [Baseline 문서](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md#status-definition)에 설명되어 있습니다.
+
+1. 상호 운용 가능 상태 (low)
+
+   각 주요 브라우저의 안정적인 버전에서 한 기능이 완전히 구현되면 마지막 주요 브라우저가 해당 기능을 구현한 날부터 '새롭게 사용 가능' 상태가 됩니다. 이때, 이 날짜를 키스톤 일자라 합니다.
+
+2. 광범위한 지원 상태 (high)
+
+   한 기능의 키스톤 일자로부터 30개월이 지난 날부터 해당 기능은 '폭넓게 사용 가능' 상태로 전환됩니다. 이 시점 이후부터는 상호운용성에 대한 우려 없이 해당 기능을 도입할 수 있습니다.
+
+이해를 돕기 위해 많은 개발자들이 널리 사용하고 있는 CSS Flex 속성을 예로 들어 보겠습니다. Can I Use를 참고해 보면 각 주요 브라우저에서 Flex 기능이 출시된 날짜는 다음과 같습니다.
+
+1. Chrome 21 : 2012년 6월 26일
+2. Safari 6.1 : 2013년 10월 22일
+3. Firefox 28 : 2014년 3월 18일
+4. Edge 12 : 2015년 7월 29일
+
+Baseline 정의에 따르면 Flex 기능이 주요 브라우저에서 마지막으로 릴리즈된 날짜인 2015년 7월 29일에 '새롭게 사용 가능' 상태가 되며 이로부터 30개월 후인 2018년 1월 29일에 '폭넓게 사용 가능' 상태로 전환됩니다.
+
+그렇다면 Baseline이 개발자들의 업무 흐름을 어떻게 바꾸게 될까요? 이미 Can I Use와 MDN은 표를 통해 브라우저별 지원 범위를 명확하게 제공하고 있습니다. 다만, 기존에는 브라우저의 버전을 예측하기 어려운 상황에서 개발자들이 표를 훑어보고 녹색이 '충분히' 표에 표시되어 있는가에 따라 감으로 판단하는 경우가 있었습니다.
+
+생활 속에서 인증마크나 브랜드를 믿고 상품을 구매하는 것처럼 개발 중 사용하고자 하는 기능을 살펴볼 때 '폭넓게 사용 가능' 상태임을 확인한다면 안심하고 바로 도입할 수 있어 의사결정 프로세스가 간소화될 것입니다. 반면에, '새롭게 사용 가능' 상태이거나 아직 모든 브라우저에서 지원되지 않는다면 더 자세한 조사가 필요하며 이전과 같이 구체적인 커버리지를 확인하고 자신들의 고객과 서비스에 어울리는 접근법을 채택해야 합니다.
+
+## Baseline에 대한 오해 바로잡기
+
+Baseline을 본격적으로 사용하기 전에 오해할 수 있는 사항들을 몇 가지 짚어보고자 합니다.
+
+1. Baseline은 일회성으로 평가하고 영원히 고정되는 것이 아닙니다. 시간이 흐르면서 상호운용성, 안정성, 개발자들의 요구 등이 변경된다면 어떤 기능은 더 이상 Baseline에 속하지 않을 수도 있습니다. 그렇다고 해서 임의로 매일 상태가 바뀌는 것 또한 아니므로 일반적으로 놀랄 일이 없다고 보장받을 수 있습니다.
+2. Baseline은 브라우저에 기본적으로 탑재되지 않은 보조 기술(스크린 리더, 화면 확대기, 음성 제어)을 다루지 않습니다. 다만, [향후 고려 사항](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md#future-considerations) 중 하나로 언급되어 있습니다.
+3. Baseline은 웹이 아닌 환경에는 적용되지 않습니다. Node.js, Deno, Electron 등 웹 밖에서 사용되는 HTML, CSS, JavaScript에서 발생하는 일탈을 수용하면 일관성이 저해될 수 있기 때문입니다.
+4. Baseline은 특정 사이트에 국한된 보고나 분석을 대체하지 않습니다. Can I Use나 MDN 사이트에 앞서 본 이미지와 같은 배너가 표시되어 기존 기능을 보완하는 데 도움을 줍니다.
+
+이와 같은 사항들을 염두에 두면 Baseline을 올바르게 이해하고 활용할 수 있습니다. 이 든든한 토대 위에서 개발자들은 사용자와 요구사항에 더 많은 리소스를 집중할 수 있습니다.
+
+## Baseline의 발전에 기여하기
+
+![Baseline 피드백](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/Baseline_피드백.png)
+
+Baseline이 탄생하기까지 다양한 관계자들의 노력이 있었습니다. WebDX 커뮤니티 그룹, MDN, 구글, 마이크로소프트 등을 포함해 이처럼 경계를 뛰어넘는 통합적인 협력이 이루어지는 이유는 결국 웹 개발 경험을 개선하기 위함입니다.
+
+진정한 효과가 발생하기 위해서는 서비스를 경험한 사용자들의 피드백이 필요하다는 것은 개발자라면 누구나 공감하시리라 봅니다. 각 사이트의 Baseline 배너에 있는 느낌표(!) 아이콘을 통해 간단한 설문을 제출함으로써 웹 개발 생태계에 기여하고 커뮤니티의 목소리를 Baseline에 반영할 수 있습니다.
+
+## 레퍼런스
+
+- [https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md)
+- [https://developer.mozilla.org/en-US/blog/baseline-evolution-on-mdn/](https://developer.mozilla.org/en-US/blog/baseline-evolution-on-mdn/)
+- [https://web.dev/blog/introducing-baseline](https://web.dev/blog/introducing-baseline)
+- [https://paul.kinlan.me/top-web-developer-pain-points-in-2021/](https://paul.kinlan.me/top-web-developer-pain-points-in-2021/)

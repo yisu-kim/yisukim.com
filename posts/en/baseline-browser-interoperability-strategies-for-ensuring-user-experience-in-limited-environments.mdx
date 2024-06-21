@@ -1,0 +1,84 @@
+---
+title: "Baseline: Browser Interoperability Strategies for Ensuring User Experience in Limited Environments"
+description: Introducing a new way to look at the functionality of web platforms.
+date: 2024-06-21
+thumbnail: thumbnail.png
+---
+
+> Please note that while "compatibility" and "interoperability" are terms often used interchangeably, in this article, interoperability is referred to as consistent behaviour across two or more browsers.
+
+## Evolving Web Environments with Interoperability
+
+As diverse platforms and devices continue to emerge, the importance of interoperability in the modern web landscape has grown significantly. While the focus used to be primarily on desktops in the past, now considerations extend naturally to mobile phones, tablets, and other platforms. Moreover, with the discontinuation of Internet Explorer support and the rise of the Evergreen browsers that automatically upgrade to the latest versions, it is no longer feasible to support specific browser versions.
+
+In this scenario, to provide users with a consistent experience, it's crucial to thoroughly understand the extent of support for each feature across different browsers to prevent unexpected issues. Accordingly, many developers have relied on resources such as [Can I Use](https://caniuse.com/) website or compatibility tables on [MDN](https://developer.mozilla.org/en-US/) when deciding whether to use a particular feature. Additionally, analysing user browser statistics to determine target browsers or using polyfills to supplement unsupported features in older browsers have also been common practices.
+
+However, tracking the various browsers used by users to establish a support baseline can increase development time and costs, potentially burdening schedules and budgets. Particularly for developers launching new projects or library developers, it's often challenging to directly ascertain the browsers of potential customers. In such situations with limited access, where should one draw the line?
+
+## Background and Purpose of Baseline
+
+![Accessibility Dashboard Image](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/접근성_Interop_대시보드.png)
+
+A glance at a blog post titled [Top web developer pain points in 2021](https://paul.kinlan.me/top-web-developer-pain-points-in-2021/) reveals that making a design/experience work the same across browsers has consistently ranked as one of the top three challenges over all quarters. Baseline was introduced to alleviate this ongoing issue.
+
+Leading browser vendors such as Google, Mozilla, Microsoft, and Apple have collaborated on projects like [Interop](https://github.com/web-platform-tests/interop), where they share annual efforts towards web standards. Baseline is a result of this collective initiative, aiming to assist developers in easily identifying whether the features they intend to use are reliably supported across major browsers.
+
+The features included in Baseline are determined based on the browsers developed by the aforementioned vendors, and as of 2023, mobile environments were also included:
+
+- Apple Safari (iOS/macOS)
+- Mozilla Firefox (Android/Desktop)
+- Google Chrome (Android/Desktop)
+- Microsoft Edge (Desktop)
+
+## Definition and Use of Baseline
+
+![Two Stages of Baseline](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/Baseline의_두_단계.png)
+
+Baseline has two key stages, as detailed in the [Baseline documentation](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md#status-definition) from the WebDX community group:
+
+1. Interoperable (low) status
+
+   When a feature is fully implemented in the stable versions of every major browsers, it enters the "newly available" status from the date the last major browser shipped that feature. This date is referred to as the keystone date.
+
+2. Wider-support (high) status
+
+   Once 30 months have passed since the keystone date of a feature, it transitions to "widely available". From this point onward, the feature can be adopted without concerns about interoperability.
+
+To better understand this, let's look at the CSS Flex property, which many developers widely use. According to Can I Use, the release dates for Flex in major browsers are as follows:
+
+1. Chrome 21: 26 June, 2012
+2. Safari 6.1: 22 October, 2013
+3. Firefox 28: 18 March, 2014
+4. Edge 12: 29 July, 2015
+
+Following the Baseline definition, Flex feature reached the "newly available" status on 29 July, 2015, the last release date by major browsers, and transitioned to "widely available" status 30 months later, on January 29, 2018.
+
+So how does Baseline change developers' workflow? Resources like Can I Use and MDN already provide clear tables showing the support status for each browser. However, developers often had to make judgment calls based on how much "enough" green they saw in these tables, especially when it was hard to predict browser versions.
+
+Much like how we trust certification marks or brands when purchasing products, confirming that a feature is in the "widely available" status will allow developers to confidently adopt it, streamlining the decision-making process. Conversely, if a feature is only in the "newly available" status or not supported by all browsers yet, further investigation is still necessary, requiring developers to verify specific coverage and choose the best approach for their particular clients and services.
+
+## Clearing Up Misconceptions About Baseline
+
+Before diving into using Baseline, let's address a few potential misconceptions:
+
+1. Baseline is not a one-time evaluation that becomes permanently fixed. A feature could fall out of Baseline If interoperability, stability, or developer demands change over time. At the same time, this status won't arbitrarily flip either, so you can generally be assured that there won't be any surprises.
+2. Baseline does not cover assistive technologies (screen readers, magnifiers, and voice control) that are not natively built into browsers. Though these are listed as [future considerations](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md#future-considerations).
+3. Baseline does not cover non-web environments. Divergences in HTML, CSS, and JavaScript behaviour in Node.js, Deno, Electron, and other non-web runtimes could compromise consistency.
+4. Baseline does not replace site-specific reports or analyses. It complements existing resources like Can I Use and MDN by surfacing banners for features that meet the Baseline criteria.
+
+By keeping these points in mind, you can properly understand Baseline and leverage them effectively. This solid foundation allows developers to dedicate more resources to meeting user needs and requirements.
+
+## Contributing to the Growth of Baselines
+
+![feedback to Baseline](/static/posts/baseline-browser-interoperability-strategies-for-ensuring-user-experience-in-limited-environments/Baseline_피드백.png)
+
+The birth of Baseline was the result of collaborative efforts from a wide range of stakeholders. Organizations such as the WebDX community group, MDN, Google, Microsoft, and others transcended their boundaries with the shared goal of improving the web development experience.
+
+As any developer would agree, true impact can be achieved with user feedback. By submitting a quick survey through the exclamation mark (!) icon on the Baseline banner, you can contribute to the web development ecosystem and make your voice heard in Baseline.
+
+## References
+
+- [https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md)
+- [https://developer.mozilla.org/en-US/blog/baseline-evolution-on-mdn/](https://developer.mozilla.org/en-US/blog/baseline-evolution-on-mdn/)
+- [https://web.dev/blog/introducing-baseline](https://web.dev/blog/introducing-baseline)
+- [https://paul.kinlan.me/top-web-developer-pain-points-in-2021/](https://paul.kinlan.me/top-web-developer-pain-points-in-2021/)

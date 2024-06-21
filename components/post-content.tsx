@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-import { Locale } from "@/i18n-config";
+import { Locale } from "@/i18n";
+import { dateFormatOptions } from "@/date-config";
 import { getPost } from "@/services/post";
 
 type Props = {
@@ -29,7 +30,7 @@ export default async function PostContent({ lang, slug }: Props) {
       <section className="flex flex-col">
         <h1>{title}</h1>
         <time className="self-end text-sm text-gray-500">
-          {date.toString()}
+          {new Date(date).toLocaleDateString(lang, dateFormatOptions)}
         </time>
         <hr className="mt-6" />
         <Post />

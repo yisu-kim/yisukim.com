@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n-config";
+import { Locale } from "@/i18n";
 import PostsGrid from "@/components/posts-grid";
 
 type Props = {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Locale, i18n } from "@/i18n-config";
+import { Locale, i18n } from "@/i18n";
 import { pretendard } from "@/ui/fonts";
 import Header from "@/components/header";
 import Footer from "@/components/footer";

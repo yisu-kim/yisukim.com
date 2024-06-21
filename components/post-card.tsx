@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Locale } from "@/i18n-config";
+import { Locale } from "@/i18n";
+import { dateFormatOptions } from "@/date-config";
 import { Frontmatter } from "@/services/post-mdx";
 
 type Props = {
@@ -30,7 +31,7 @@ export default function PostCard({
             <h3 className="text-xl font-bold">{title}</h3>
             <p className="w-full grow mt-1 text-gray-500">{description}</p>
             <time className="self-end mt-4 text-sm text-gray-500">
-              {date.toString()}
+              {new Date(date).toLocaleDateString(lang, dateFormatOptions)}
             </time>
           </div>
         </div>

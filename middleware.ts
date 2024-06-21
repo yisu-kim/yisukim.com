@@ -1,4 +1,4 @@
-import { i18n } from "@/i18n-config";
+import { i18n } from "@/i18n";
 import { NextRequest, NextResponse } from "next/server";
 
 import { match } from "@formatjs/intl-localematcher";

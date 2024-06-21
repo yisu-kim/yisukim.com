@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n-config";
+import { Locale } from "@/i18n";
 import { getAllPostSource, getPostSource } from "./post-source";
 import { getPostMDX } from "./post-mdx";
 

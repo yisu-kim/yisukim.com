@@ -1,6 +1,7 @@
 import path from "path";
-import { readFile, readdir } from "fs/promises";
-import { Locale } from "@/i18n-config";
+import { access, readFile, readdir } from "fs/promises";
+
+import { Locale } from "@/i18n";
 
 export type PostSource = {
   slug: string;
@@ -29,7 +30,11 @@ export async function getPostSource(
   slug: string
 ): Promise<PostSource> {
   const filePath = path.join(process.cwd(), `posts/${lang}`, `${slug}.mdx`);
-  if (!filePath) throw new Error(`The post named ${slug} cannot be found.`);
+  try {
+    await access(filePath);
+  } catch (e) {
+    throw new Error(`The post named ${slug} cannot be found.`);
+  }
 
   const content = await readFile(filePath, "utf-8");
   const fileName = getMDXFileName(filePath);

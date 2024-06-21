@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n-config";
+import { Locale } from "@/i18n";
 import { getAllPost } from "@/services/post";
 import PostCard from "./post-card";
 
