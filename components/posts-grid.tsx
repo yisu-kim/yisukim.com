@@ -2,9 +2,9 @@ import { Locale } from "@/i18n";
 import { getAllPost } from "@/services/post";
 import PostCard from "./post-card";
 
-type Props = {
+type Props = Readonly<{
   lang: Locale;
-};
+}>;
 
 export default async function PostsGrid({ lang }: Props) {
   const posts = await getAllPost(lang);

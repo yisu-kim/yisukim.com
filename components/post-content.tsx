@@ -4,10 +4,10 @@ import { Locale } from "@/i18n";
 import { dateFormatOptions } from "@/date-config";
 import { getPost } from "@/services/post";
 
-type Props = {
+type Props = Readonly<{
   lang: Locale;
   slug: string;
-};
+}>;
 
 export default async function PostContent({ lang, slug }: Props) {
   // TODO: Add exception handling

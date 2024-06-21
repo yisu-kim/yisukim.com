@@ -4,7 +4,11 @@ import { Email } from "@/ui/icons/email";
 import { GitHub } from "@/ui/icons/github";
 import { LinkedIn } from "@/ui/icons/linkedin";
 
-export default function Footer() {
+type Props = Readonly<{
+  creator: string;
+}>;
+
+export default function Footer({ creator }: Props) {
   return (
     <footer className="py-2 text-center flex flex-col gap-2">
       <div className="flex m-auto gap-3 justify-between">
@@ -19,7 +23,7 @@ export default function Footer() {
         </Link>
       </div>
       <p className="text-sm">
-        © {new Date().getFullYear()} Yisu Kim · All rights reserved.
+        © {new Date().getFullYear()} {creator} · All rights reserved.
       </p>
     </footer>
   );

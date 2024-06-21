@@ -6,11 +6,12 @@ import Link from "next/link";
 import { Locale, getTheOtherLocale } from "@/i18n";
 import { Language } from "@/ui/icons/language";
 
-type Props = {
+type Props = Readonly<{
   lang: Locale;
-};
+  creator: string;
+}>;
 
-export default function Header({ lang }: Props) {
+export default function Header({ lang, creator }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -25,7 +26,7 @@ export default function Header({ lang }: Props) {
   return (
     <header className="w-full flex items-center justify-between px-6 py-4">
       <Link href={`/${lang}`}>
-        <h1 className="text-2xl font-bold">Yisu Kim</h1>
+        <h1 className="text-2xl font-bold">{creator}</h1>
       </Link>
       {!isPostPage(lang, pathname) && (
         <button

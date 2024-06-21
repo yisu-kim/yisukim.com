@@ -5,11 +5,11 @@ import { Locale } from "@/i18n";
 import { dateFormatOptions } from "@/date-config";
 import { Frontmatter } from "@/services/post-mdx";
 
-type Props = {
+type Props = Readonly<{
   lang: Locale;
   slug: string;
   frontmatter: Frontmatter;
-};
+}>;
 
 export default function PostCard({
   lang,
