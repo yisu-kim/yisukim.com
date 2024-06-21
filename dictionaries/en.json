@@ -1,5 +1,10 @@
 {
   "profile": {
     "name": "Yisu Kim"
+  },
+  "notFound": {
+    "title": "The page cannot be found.",
+    "description": "Please check if the URL you entered is correct.",
+    "redirectText": "View all posts"
   }
 }
