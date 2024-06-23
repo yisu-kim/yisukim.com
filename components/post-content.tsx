@@ -33,7 +33,9 @@ export default async function PostContent({ lang, slug }: Props) {
           {new Date(date).toLocaleDateString(lang, dateFormatOptions)}
         </time>
         <hr className="mt-6" />
-        <Post />
+        <div className="prose-img:mx-auto">
+          <Post />
+        </div>
         <hr />
       </section>
     </article>

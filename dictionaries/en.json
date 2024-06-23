@@ -2,6 +2,10 @@
   "profile": {
     "name": "Yisu Kim"
   },
+  "blog": {
+    "title": "Yisu Kim",
+    "description": "A software engineer's call-by-need articles on JavaScript, TypeScript, React and more."
+  },
   "notFound": {
     "title": "The page cannot be found.",
     "description": "Please check if the URL you entered is correct.",
