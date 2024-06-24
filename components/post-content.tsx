@@ -24,7 +24,7 @@ export default async function PostContent({ lang, slug }: Props) {
           alt={title}
           src={`/static/posts/${slug}/${thumbnail}`}
           width={1200}
-          height={600}
+          height={630}
         />
       )}
       <section className="flex flex-col">

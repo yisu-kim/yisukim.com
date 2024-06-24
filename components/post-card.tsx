@@ -25,7 +25,7 @@ export default function PostCard({
             src={`/static/posts/${slug}/${thumbnail}`}
             alt={title}
             width={400}
-            height={200}
+            height={210}
           />
           <div className="grow flex flex-col">
             <h3 className="text-xl font-bold">{title}</h3>

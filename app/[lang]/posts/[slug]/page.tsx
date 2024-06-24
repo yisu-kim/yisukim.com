@@ -11,9 +11,15 @@ type Props = Readonly<{
 
 export async function generateMetadata({ params: { lang, slug } }: Props) {
   const {
-    frontmatter: { title, description },
+    frontmatter: { title, description, thumbnail },
   } = await getPost(lang, slug);
-  return { title, description };
+  return {
+    title,
+    description,
+    openGraph: {
+      images: `/static/posts/${slug}/${thumbnail}`,
+    },
+  };
 }
 
 export default async function PostPage({ params: { lang, slug } }: Props) {
