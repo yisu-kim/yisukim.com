@@ -1,19 +1,21 @@
+"use client";
+
 import Link from "next/link";
 
-import { getDictionary } from "@/dictionaries";
-import { Locale } from "@/i18n";
+import { useDictionary } from "@/contexts/dictionary-context";
+import { RootStaticParams } from "@/app/[lang]/layout";
 
-type Props = Readonly<{
-  params: { lang: Locale };
-}>;
+type NotFoundStaticParams = RootStaticParams &
+  Readonly<{ params: { notFound: any } }>;
 
-export default async function NotFound({ params: { lang } }: Props) {
+export default function NotFound({ params: { lang } }: NotFoundStaticParams) {
   const {
-    notFound: { title, description, redirectText },
-  } = await getDictionary(lang);
+    dictionary: { notFound },
+  } = useDictionary();
+  const { title, description, redirectText } = notFound ?? {};
 
   return (
-    <section className="prose h-full flex flex-col items-center justify-center p-4 text-center">
+    <section className="prose flex h-full max-w-full flex-col items-center justify-center p-4 text-center">
       <h2>{title}</h2>
       <p>{description}</p>
       <p>

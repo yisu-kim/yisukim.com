@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, cache } from "react";
 import * as runtime from "react/jsx-runtime";
 
 import { EvaluateOptions, evaluate } from "@mdx-js/mdx";
@@ -25,7 +25,7 @@ export type PostMDX = {
   frontmatter: Frontmatter;
 };
 
-export async function getPostMDX(source: string): Promise<PostMDX> {
+export const getPostMDX = cache(async (source: string): Promise<PostMDX> => {
   const { default: MDXContent, frontmatter } = await evaluate(
     source,
     evaluateOptions as EvaluateOptions
@@ -35,7 +35,7 @@ export async function getPostMDX(source: string): Promise<PostMDX> {
     default: () => <MDXContent components={components} />,
     frontmatter: frontmatter as Frontmatter,
   };
-}
+});
 
 const rehypePrettyCodeOptions: RehypePrettyCodeOptions = {
   keepBackground: false,

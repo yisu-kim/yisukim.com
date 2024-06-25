@@ -1,16 +1,27 @@
-import { Locale } from "@/i18n";
-import { getPost } from "@/services/post";
-import PostContent from "@/components/post-content";
 import { BASE_URL } from "@/lib/constants";
+import { getPostSources } from "@/services/post-source";
+import { Post, getPost } from "@/services/post";
+import { RootStaticParams } from "@/app/[lang]/layout";
+import PostContent from "@/components/post-content";
 
-type Props = Readonly<{
-  params: {
-    lang: Locale;
-    slug: string;
-  };
-}>;
+type PostStaticParams = RootStaticParams & Readonly<{ params: Post }>;
 
-export async function generateMetadata({ params: { lang, slug } }: Props) {
+export default async function PostPage({
+  params: { lang, slug },
+}: PostStaticParams) {
+  return <PostContent lang={lang} slug={slug} />;
+}
+
+export async function generateStaticParams({
+  params: { lang },
+}: RootStaticParams) {
+  const posts = await getPostSources(lang);
+  return posts.map(({ slug }) => ({ lang, slug }));
+}
+
+export async function generateMetadata({
+  params: { lang, slug },
+}: PostStaticParams) {
   const {
     frontmatter: { title, description, thumbnail },
   } = await getPost(lang, slug);
@@ -22,8 +33,4 @@ export async function generateMetadata({ params: { lang, slug } }: Props) {
       images: `/static/posts/${slug}/${thumbnail}`,
     },
   };
-}
-
-export default async function PostPage({ params: { lang, slug } }: Props) {
-  return <PostContent lang={lang} slug={slug} />;
 }

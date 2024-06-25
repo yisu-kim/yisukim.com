@@ -1,10 +1,6 @@
-import { Locale } from "@/i18n";
 import PostsGrid from "@/components/posts-grid";
+import { RootStaticParams } from "./layout";
 
-type Props = Readonly<{
-  params: { lang: Locale };
-}>;
-
-export default function HomePage({ params: { lang } }: Props) {
+export default function HomePage({ params: { lang } }: RootStaticParams) {
   return <PostsGrid lang={lang} />;
 }

@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
 
-import { Locale, i18n } from "@/i18n";
+import { i18n } from "@/i18n";
 import { BASE_URL } from "@/lib/constants";
-import { Post, getPosts } from "@/services/post";
+import { getPostsByLocale } from "@/services/post";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseRoutes = await getBaseRoutes();
@@ -30,21 +30,6 @@ async function getBaseRoutes(): Promise<MetadataRoute.Sitemap> {
   }));
 
   return [...baseRoute, ...localizedRoutes];
-}
-
-type PostsByLocale = {
-  [key in Locale]: Array<Post>;
-};
-
-async function getPostsByLocale(): Promise<PostsByLocale> {
-  const postsByLocale = await Promise.all(
-    i18n.locales.map(async (lang) => {
-      const posts = await getPosts(lang);
-      return [lang, posts];
-    })
-  );
-
-  return Object.fromEntries(postsByLocale);
 }
 
 async function getPostRoutes() {
