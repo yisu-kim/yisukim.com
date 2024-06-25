@@ -5,13 +5,13 @@ import { BASE_URL } from "@/lib/constants";
 import { getPostsByLocale } from "@/services/post";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseRoutes = await getBaseRoutes();
+  const baseRoutes = await getMenuRoutes();
   const postRoutes = await getPostRoutes();
 
   return [...baseRoutes, ...postRoutes];
 }
 
-async function getBaseRoutes(): Promise<MetadataRoute.Sitemap> {
+async function getMenuRoutes(): Promise<MetadataRoute.Sitemap> {
   const today = new Date().toISOString().split("T")[0];
 
   const baseRoute: MetadataRoute.Sitemap = [
@@ -22,20 +22,31 @@ async function getBaseRoutes(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const localizedRoutes: MetadataRoute.Sitemap = i18n.locales.map((locale) => ({
-    url: `${BASE_URL}/${locale}`,
-    lastModified: today,
-    changeFrequency: "daily",
-    priority: 0.7,
-  }));
+  const localizedHomeRoutes: MetadataRoute.Sitemap = i18n.locales.map(
+    (locale) => ({
+      url: `${BASE_URL}/${locale}`,
+      lastModified: today,
+      changeFrequency: "daily",
+      priority: 0.7,
+    })
+  );
 
-  return [...baseRoute, ...localizedRoutes];
+  const localizedPostsRoutes: MetadataRoute.Sitemap = i18n.locales.map(
+    (locale) => ({
+      url: `${BASE_URL}/${locale}/posts`,
+      lastModified: today,
+      changeFrequency: "daily",
+      priority: 0.7,
+    })
+  );
+
+  return [...baseRoute, ...localizedHomeRoutes, ...localizedPostsRoutes];
 }
 
 async function getPostRoutes() {
   const postsByLocale = await getPostsByLocale();
 
-  const localizedRoutes: MetadataRoute.Sitemap = Object.entries(
+  const localizedPostRoutes: MetadataRoute.Sitemap = Object.entries(
     postsByLocale
   ).flatMap(([lang, posts]) =>
     posts.map(({ slug, frontmatter: { modifiedAt, createdAt } }) => ({
@@ -46,5 +57,5 @@ async function getPostRoutes() {
     }))
   );
 
-  return localizedRoutes;
+  return localizedPostRoutes;
 }
