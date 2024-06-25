@@ -1,6 +1,7 @@
 import { Locale } from "@/i18n";
 import { getPost } from "@/services/post";
 import PostContent from "@/components/post-content";
+import { BASE_URL } from "@/lib/constants";
 
 type Props = Readonly<{
   params: {
@@ -14,6 +15,7 @@ export async function generateMetadata({ params: { lang, slug } }: Props) {
     frontmatter: { title, description, thumbnail },
   } = await getPost(lang, slug);
   return {
+    metadataBase: new URL(BASE_URL),
     title,
     description,
     openGraph: {
