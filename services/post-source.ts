@@ -8,11 +8,11 @@ export type PostSource = {
   content: string;
 };
 
-export async function getAllPostSource(lang: Locale): Promise<PostSource[]> {
+export async function getPostSources(lang: Locale): Promise<PostSource[]> {
   const dirPath = path.join(process.cwd(), `posts/${lang}`);
   const filePaths = await readdir(dirPath, "utf-8");
 
-  const allSource = await Promise.all(
+  const sources = await Promise.all(
     filePaths.map(async (filePath) => {
       const content = await readFile(
         path.join(process.cwd(), `posts/${lang}`, filePath),
@@ -22,7 +22,7 @@ export async function getAllPostSource(lang: Locale): Promise<PostSource[]> {
       return { slug: fileName, content };
     })
   );
-  return allSource;
+  return sources;
 }
 
 export async function getPostSource(

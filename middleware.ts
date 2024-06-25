@@ -32,8 +32,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - static (custom asset files)
+     * - sitemap.xml (sitemap file)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|static|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|static|sitemap.xml|favicon.ico).*)",
   ],
 };

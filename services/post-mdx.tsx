@@ -15,11 +15,17 @@ import rehypeAutolinkHeadings, {
 export type Frontmatter = {
   title: string;
   description: string;
-  date: string;
+  createdAt: string;
+  modifiedAt?: string;
   thumbnail: string;
 };
 
-export async function getPostMDX(source: string) {
+export type PostMDX = {
+  default: () => JSX.Element;
+  frontmatter: Frontmatter;
+};
+
+export async function getPostMDX(source: string): Promise<PostMDX> {
   const { default: MDXContent, frontmatter } = await evaluate(
     source,
     evaluateOptions as EvaluateOptions

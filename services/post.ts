@@ -1,17 +1,19 @@
 import { Locale } from "@/i18n";
-import { getAllPostSource, getPostSource } from "./post-source";
-import { getPostMDX } from "./post-mdx";
+import { getPostSources, getPostSource } from "./post-source";
+import { PostMDX, getPostMDX } from "./post-mdx";
 
-export async function getAllPost(lang: Locale) {
-  const sources = await getAllPostSource(lang);
-  const allPost = await Promise.all(
+export type Post = { slug: string } & PostMDX;
+
+export async function getPosts(lang: Locale) {
+  const sources = await getPostSources(lang);
+  const posts = await Promise.all(
     sources.map(async ({ slug, content }) => {
       const post = await getPostMDX(content);
       return { slug, ...post };
     })
   );
-  return allPost.sort((a, b) =>
-    a.frontmatter.date > b.frontmatter.date ? -1 : 1
+  return posts.sort((a, b) =>
+    a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1
   );
 }
 

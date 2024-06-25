@@ -13,7 +13,7 @@ export default async function PostContent({ lang, slug }: Props) {
   // TODO: Add exception handling
   const {
     default: Post,
-    frontmatter: { title, date, thumbnail },
+    frontmatter: { title, createdAt, thumbnail },
   } = await getPost(lang, slug);
 
   return (
@@ -30,7 +30,7 @@ export default async function PostContent({ lang, slug }: Props) {
       <section className="flex flex-col">
         <h1>{title}</h1>
         <time className="self-end text-sm text-gray-500">
-          {new Date(date).toLocaleDateString(lang, dateFormatOptions)}
+          {new Date(createdAt).toLocaleDateString(lang, dateFormatOptions)}
         </time>
         <hr className="mt-6" />
         <div className="prose-img:mx-auto">

@@ -14,7 +14,7 @@ type Props = Readonly<{
 export default function PostCard({
   lang,
   slug,
-  frontmatter: { title, description, date, thumbnail },
+  frontmatter: { title, description, createdAt, thumbnail },
 }: Props) {
   return (
     <Link href={`/${lang}/posts/${slug}`}>
@@ -31,7 +31,7 @@ export default function PostCard({
             <h3 className="text-xl font-bold">{title}</h3>
             <p className="w-full grow mt-1 text-gray-500">{description}</p>
             <time className="self-end mt-4 text-sm text-gray-500">
-              {new Date(date).toLocaleDateString(lang, dateFormatOptions)}
+              {new Date(createdAt).toLocaleDateString(lang, dateFormatOptions)}
             </time>
           </div>
         </div>
