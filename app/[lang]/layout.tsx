@@ -1,9 +1,9 @@
 import { PropsWithChildren } from "react";
 
-import { Locale, i18n } from "@/i18n";
-import { getDictionary } from "@/dictionaries";
 import { DictionaryProvider } from "@/contexts/dictionary-context";
-import { BASE_URL } from "@/lib/constants";
+import { BASE_URL } from "@/utils/constants";
+import { Locale, i18n } from "@/utils/i18n";
+import { getDictionary } from "@/utils/dictionaries";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 

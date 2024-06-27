@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Locale } from "@/i18n";
-import { dateFormatOptions } from "@/date-config";
+import { Locale } from "@/utils/i18n";
+import { dateFormatOptions } from "@/utils/date";
 import { Frontmatter } from "@/services/post-mdx";
 
 type Props = Readonly<{

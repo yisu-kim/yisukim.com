@@ -3,7 +3,7 @@ import { access, readFile, readdir } from "fs/promises";
 
 import { cache } from "react";
 
-import { Locale } from "@/i18n";
+import { Locale } from "@/utils/i18n";
 
 export type PostSource = {
   slug: string;

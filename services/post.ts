@@ -1,6 +1,6 @@
 import { cache } from "react";
 
-import { Locale, i18n } from "@/i18n";
+import { Locale, i18n } from "@/utils/i18n";
 import { getPostSources, getPostSource } from "./post-source";
 import { PostMDX, getPostMDX } from "./post-mdx";
 

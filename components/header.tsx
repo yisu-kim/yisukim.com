@@ -3,8 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { Locale, getTheOtherLocale } from "@/i18n";
 import { Language } from "@/assets/icons/language";
+import { Locale, getTheOtherLocale } from "@/utils/i18n";
 
 type Props = Readonly<{
   lang: Locale;

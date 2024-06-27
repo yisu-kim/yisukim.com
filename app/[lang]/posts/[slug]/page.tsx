@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/lib/constants";
+import { BASE_URL } from "@/utils/constants";
 import { getPostSources } from "@/services/post-source";
 import { Post, getPost } from "@/services/post";
 import { RootStaticParams } from "@/app/[lang]/layout";

@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n";
+import { Locale } from "@/utils/i18n";
 import { getPosts } from "@/services/post";
 import PostCard from "./post-card";
 

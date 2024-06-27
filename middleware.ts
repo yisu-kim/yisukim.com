@@ -1,8 +1,9 @@
-import { i18n } from "@/i18n";
 import { NextRequest, NextResponse } from "next/server";
 
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+
+import { i18n } from "@/utils/i18n";
 
 function getLocale(request: NextRequest) {
   const headers = { "accept-language": "en;q=0.5" };

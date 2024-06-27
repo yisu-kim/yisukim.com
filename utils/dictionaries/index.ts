@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n";
+import { Locale } from "@/utils/i18n";
 
 export type Dictionary = {
   profile: {
@@ -24,8 +24,8 @@ export type Dictionary = {
 };
 
 const dictionaries = {
-  en: () => import("@/dictionaries/en.json").then((module) => module.default),
-  ko: () => import("@/dictionaries/ko.json").then((module) => module.default),
+  en: () => import("./en.json").then((module) => module.default),
+  ko: () => import("./ko.json").then((module) => module.default),
 };
 
 export async function getDictionary(locale: Locale) {

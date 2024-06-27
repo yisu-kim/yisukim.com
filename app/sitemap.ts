@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
-import { i18n } from "@/i18n";
-import { BASE_URL } from "@/lib/constants";
+import { BASE_URL } from "@/utils/constants";
+import { i18n } from "@/utils/i18n";
 import { getPostsByLocale } from "@/services/post";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
