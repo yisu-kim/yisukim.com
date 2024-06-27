@@ -4,14 +4,15 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { Locale, getTheOtherLocale } from "@/i18n";
-import { Language } from "@/ui/icons/language";
+import { Language } from "@/assets/icons/language";
 
 type Props = Readonly<{
   lang: Locale;
   creator: string;
+  toggleButtonLabel: string;
 }>;
 
-export default function Header({ lang, creator }: Props) {
+export default function Header({ lang, creator, toggleButtonLabel }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -30,6 +31,7 @@ export default function Header({ lang, creator }: Props) {
       </Link>
       {!isPostPage(lang, pathname) && (
         <button
+          aria-label={toggleButtonLabel}
           className="border rounded-lg p-1 hover:bg-gray-100"
           onClick={toggleLocale}
         >

@@ -13,6 +13,14 @@ export type Dictionary = {
     description: string;
     redirectText: string;
   };
+  language: {
+    toggle: string;
+  };
+  contact: {
+    email: string;
+    github: string;
+    linkedin: string;
+  };
 };
 
 const dictionaries = {

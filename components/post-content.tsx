@@ -18,15 +18,14 @@ export default async function PostContent({ lang, slug }: Props) {
 
   return (
     <article className="prose prose-quoteless max-w-full p-4">
-      {thumbnail && (
-        <Image
-          className="w-full mb-6 rounded-xl border"
-          alt={title}
-          src={`/static/posts/${slug}/${thumbnail}`}
-          width={1200}
-          height={630}
-        />
-      )}
+      <Image
+        className="w-full mb-6 rounded-xl border"
+        alt={title}
+        src={`/static/posts/${slug}/${thumbnail}`}
+        width={1200}
+        height={630}
+        priority
+      />
       <section className="flex flex-col">
         <h1>{title}</h1>
         <time className="self-end text-sm text-gray-500">

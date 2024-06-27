@@ -28,7 +28,7 @@ export default function PostCard({
             height={210}
           />
           <div className="grow flex flex-col">
-            <h3 className="text-xl font-bold">{title}</h3>
+            <h2 className="text-xl font-bold">{title}</h2>
             <p className="w-full grow mt-1 text-gray-500">{description}</p>
             <time className="self-end mt-4 text-sm text-gray-500">
               {new Date(createdAt).toLocaleDateString(lang, dateFormatOptions)}

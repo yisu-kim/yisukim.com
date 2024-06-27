@@ -1,5 +1,7 @@
-import { PropsWithChildren, cache } from "react";
+import { ComponentProps, cache } from "react";
 import * as runtime from "react/jsx-runtime";
+
+import Image from "next/image";
 
 import { EvaluateOptions, evaluate } from "@mdx-js/mdx";
 import remarkFrontmatter from "remark-frontmatter";
@@ -61,7 +63,7 @@ const evaluateOptions = {
 };
 
 const components = {
-  figure: (props: PropsWithChildren) => (
+  figure: (props: ComponentProps<"figure">) => (
     <figure
       {...props}
       className={
@@ -73,4 +75,36 @@ const components = {
       {props.children}
     </figure>
   ),
+  img: ({
+    src,
+    alt,
+    width: withoutWidth,
+    height: withoutHeight,
+    ...rest
+  }: ComponentProps<"img">) => {
+    if (!src) {
+      throw new Error("The image src cannot be found.");
+    }
+
+    if (!alt) {
+      throw new Error("The image alt cannot be found.");
+    }
+
+    return (
+      <span style={{ display: "flex", flexDirection: "column" }}>
+        <Image
+          alt={alt}
+          src={src}
+          width={0}
+          height={0}
+          sizes="100vh"
+          style={{
+            width: "auto",
+            height: "100%",
+          }}
+          {...rest}
+        />
+      </span>
+    );
+  },
 };
