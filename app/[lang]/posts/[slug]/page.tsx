@@ -23,14 +23,14 @@ export async function generateMetadata({
   params: { lang, slug },
 }: PostStaticParams) {
   const {
-    frontmatter: { title, description, thumbnail },
+    frontmatter: { title, description },
   } = await getPost(lang, slug);
   return {
     metadataBase: new URL(BASE_URL),
     title,
     description,
     openGraph: {
-      images: `/static/posts/${slug}/${thumbnail}`,
+      images: `/static/posts/${slug}/opengraph.png`,
     },
   };
 }

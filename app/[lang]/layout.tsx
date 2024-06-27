@@ -3,6 +3,7 @@ import { PropsWithChildren } from "react";
 import { Locale, i18n } from "@/i18n";
 import { getDictionary } from "@/dictionaries";
 import { DictionaryProvider } from "@/contexts/dictionary-context";
+import { BASE_URL } from "@/lib/constants";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
@@ -44,5 +45,12 @@ export async function generateMetadata({ params: { lang } }: RootStaticParams) {
   const {
     blog: { title, description },
   } = await getDictionary(lang);
-  return { title, description };
+  return {
+    metadataBase: new URL(BASE_URL),
+    title,
+    description,
+    openGraph: {
+      images: `/static/profile.png`,
+    },
+  };
 }
