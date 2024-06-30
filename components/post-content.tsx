@@ -19,7 +19,7 @@ export default async function PostContent({ lang, slug }: Props) {
   return (
     <article className="prose prose-quoteless max-w-full p-4">
       <Image
-        className="w-full mb-6 rounded-xl border"
+        className="mb-6 w-full rounded-xl border"
         alt={title}
         src={`/static/posts/${slug}/${thumbnail}`}
         width={1200}

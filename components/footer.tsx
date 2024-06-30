@@ -18,8 +18,8 @@ export default function Footer({
   contactLinkLabel: { email: mail, github, linkedin },
 }: Props) {
   return (
-    <footer className="py-2 text-center flex flex-col gap-2">
-      <div className="flex m-auto gap-3 justify-between">
+    <footer className="flex flex-col gap-2 py-2 text-center">
+      <div className="m-auto flex justify-between gap-3">
         <Link href="mailto:yisu.kim.job@outlook.com" aria-label={mail}>
           <Email width="1.4em" height="1.4em" />
         </Link>

@@ -18,8 +18,8 @@ export default function PostCard({
 }: Props) {
   return (
     <Link href={`/${lang}/posts/${slug}`}>
-      <article className="h-full border rounded-lg p-4">
-        <div className="h-full flex flex-col gap-4">
+      <article className="h-full rounded-lg border p-4">
+        <div className="flex h-full flex-col gap-4">
           <Image
             className="w-full rounded-lg border"
             src={`/static/posts/${slug}/${thumbnail}`}
@@ -27,10 +27,10 @@ export default function PostCard({
             width={400}
             height={210}
           />
-          <div className="grow flex flex-col">
+          <div className="flex grow flex-col">
             <h2 className="text-xl font-bold">{title}</h2>
-            <p className="w-full grow mt-1 text-gray-500">{description}</p>
-            <time className="self-end mt-4 text-sm text-gray-500">
+            <p className="mt-1 w-full grow text-gray-500">{description}</p>
+            <time className="mt-4 self-end text-sm text-gray-500">
               {new Date(createdAt).toLocaleDateString(lang, dateFormatOptions)}
             </time>
           </div>

@@ -25,14 +25,14 @@ export default function Header({ lang, creator, toggleButtonLabel }: Props) {
   }
 
   return (
-    <header className="w-full flex items-center justify-between px-6 py-4">
+    <header className="flex w-full items-center justify-between px-6 py-4">
       <Link href={`/${lang}`}>
         <h1 className="text-2xl font-bold">{creator}</h1>
       </Link>
       {!isPostPage(lang, pathname) && (
         <button
           aria-label={toggleButtonLabel}
-          className="border rounded-lg p-1 hover:bg-gray-100"
+          className="rounded-lg border p-1 hover:bg-gray-100"
           onClick={toggleLocale}
         >
           <Language width="1.4em" height="1.4em" className="text-gray-500" />

@@ -26,7 +26,7 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} className={pretendard.className}>
-      <body className="h-dvh overflow-y-auto flex flex-col max-w-screen-md mx-auto">
+      <body className="mx-auto flex h-dvh max-w-screen-md flex-col overflow-y-auto">
         <Header lang={lang} creator={name} toggleButtonLabel={toggle} />
         <main className="grow">
           <DictionaryProvider lang={lang}>{children}</DictionaryProvider>
