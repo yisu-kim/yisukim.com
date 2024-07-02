@@ -6,6 +6,8 @@ import PostContent from "@/components/post-content";
 
 type PostStaticParams = RootStaticParams & Readonly<{ params: Post }>;
 
+export const dynamicParams = false;
+
 export default async function PostPage({
   params: { lang, slug },
 }: PostStaticParams) {

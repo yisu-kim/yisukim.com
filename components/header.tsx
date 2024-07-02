@@ -16,6 +16,9 @@ export default function Header({ lang, creator, toggleButtonLabel }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const showLocaleButton =
+    isHomePage(lang, pathname) || isPostsPage(lang, pathname);
+
   function toggleLocale() {
     const newLocale = getTheOtherLocale(lang);
     const segments = pathname.split("/");
@@ -29,7 +32,7 @@ export default function Header({ lang, creator, toggleButtonLabel }: Props) {
       <Link href={`/${lang}`}>
         <h1 className="text-2xl font-bold">{creator}</h1>
       </Link>
-      {!isPostPage(lang, pathname) && (
+      {showLocaleButton && (
         <button
           aria-label={toggleButtonLabel}
           className="rounded-lg border p-1 hover:bg-gray-100"
@@ -42,7 +45,12 @@ export default function Header({ lang, creator, toggleButtonLabel }: Props) {
   );
 }
 
-function isPostPage(lang: Locale, pathname: string): boolean {
-  const regex = new RegExp(`^\/${lang}\/posts\/.+$`);
+function isHomePage(lang: Locale, pathname: string): boolean {
+  const regex = new RegExp(`^\/${lang}$`);
+  return regex.test(pathname);
+}
+
+function isPostsPage(lang: Locale, pathname: string): boolean {
+  const regex = new RegExp(`^\/${lang}\/posts$`);
   return regex.test(pathname);
 }

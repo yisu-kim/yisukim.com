@@ -1,6 +1,5 @@
 import { PropsWithChildren } from "react";
 
-import { DictionaryProvider } from "@/contexts/dictionary-context";
 import { BASE_URL } from "@/utils/constants";
 import { Locale, i18n } from "@/utils/i18n";
 import { getDictionary } from "@/utils/dictionaries";
@@ -28,9 +27,7 @@ export default async function RootLayout({
     <html lang={lang} className={pretendard.className}>
       <body className="mx-auto flex h-dvh max-w-screen-md flex-col overflow-y-auto">
         <Header lang={lang} creator={name} toggleButtonLabel={toggle} />
-        <main className="grow">
-          <DictionaryProvider lang={lang}>{children}</DictionaryProvider>
-        </main>
+        <main className="grow">{children}</main>
         <Footer creator={name} contactLinkLabel={contact} />
       </body>
     </html>
