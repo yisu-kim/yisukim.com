@@ -2,7 +2,8 @@ import Image from "next/image";
 
 import { Locale } from "@/utils/i18n";
 import { dateFormatOptions } from "@/utils/date";
-import { getPost } from "@/services/post";
+import { getPost } from "@/db/post";
+import { CustomMDX } from "./mdx";
 
 type Props = Readonly<{
   lang: Locale;
@@ -10,11 +11,15 @@ type Props = Readonly<{
 }>;
 
 export default async function PostContent({ lang, slug }: Props) {
-  // TODO: Add exception handling
+  const post = await getPost(lang, slug);
+  if (!post) {
+    return;
+  }
+
   const {
-    default: Post,
-    frontmatter: { title, createdAt, thumbnail },
-  } = await getPost(lang, slug);
+    content,
+    metadata: { title, createdAt, thumbnail },
+  } = post;
 
   return (
     <article className="prose prose-quoteless max-w-full p-4">
@@ -33,7 +38,7 @@ export default async function PostContent({ lang, slug }: Props) {
         </time>
         <hr className="mt-6" />
         <div className="prose-img:mx-auto">
-          <Post />
+          <CustomMDX source={content} />
         </div>
         <hr />
       </section>

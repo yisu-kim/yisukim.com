@@ -1,11 +1,10 @@
-import { ComponentProps, cache } from "react";
 import * as runtime from "react/jsx-runtime";
+import { ComponentProps } from "react";
 
 import Image from "next/image";
 
-import { EvaluateOptions, evaluate } from "@mdx-js/mdx";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import { evaluate, EvaluateOptions } from "@mdx-js/mdx";
+import { MDXComponents } from "mdx/types";
 import rehypePrettyCode, {
   Options as RehypePrettyCodeOptions,
 } from "rehype-pretty-code";
@@ -14,30 +13,24 @@ import rehypeAutolinkHeadings, {
   Options as RehypeAutolinkHeadingsOptions,
 } from "rehype-autolink-headings";
 
-export type Frontmatter = {
-  title: string;
-  description: string;
-  createdAt: string;
-  modifiedAt?: string;
-  thumbnail: string;
+type Props = {
+  source: string;
+  components?: MDXComponents;
 };
 
-export type PostMDX = {
-  default: () => JSX.Element;
-  frontmatter: Frontmatter;
-};
-
-export const getPostMDX = cache(async (source: string): Promise<PostMDX> => {
-  const { default: MDXContent, frontmatter } = await evaluate(
+export async function CustomMDX({ source, components, ...rest }: Props) {
+  const { default: MDXContent } = await evaluate(
     source,
-    evaluateOptions as EvaluateOptions
+    evaluateOptions as EvaluateOptions,
   );
 
-  return {
-    default: () => <MDXContent components={components} />,
-    frontmatter: frontmatter as Frontmatter,
-  };
-});
+  return (
+    <MDXContent
+      {...rest}
+      components={{ ...customComponents, ...(components || {}) }}
+    />
+  );
+}
 
 const rehypePrettyCodeOptions: RehypePrettyCodeOptions = {
   keepBackground: false,
@@ -54,7 +47,7 @@ const rehypeAutolinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
 
 const evaluateOptions = {
   ...runtime,
-  remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
+  remarkPlugins: [],
   rehypePlugins: [
     [rehypePrettyCode, rehypePrettyCodeOptions],
     rehypeSlug,
@@ -62,7 +55,7 @@ const evaluateOptions = {
   ],
 };
 
-const components = {
+const customComponents = {
   figure: (props: ComponentProps<"figure">) => (
     <figure
       {...props}

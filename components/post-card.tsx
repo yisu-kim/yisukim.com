@@ -3,18 +3,18 @@ import Image from "next/image";
 
 import { Locale } from "@/utils/i18n";
 import { dateFormatOptions } from "@/utils/date";
-import { Frontmatter } from "@/services/post-mdx";
+import { Metadata } from "@/db/post";
 
 type Props = Readonly<{
   lang: Locale;
   slug: string;
-  frontmatter: Frontmatter;
+  metadata: Metadata;
 }>;
 
 export default function PostCard({
   lang,
   slug,
-  frontmatter: { title, description, createdAt, thumbnail },
+  metadata: { title, description, createdAt, thumbnail },
 }: Props) {
   return (
     <Link href={`/${lang}/posts/${slug}`}>

@@ -14,7 +14,13 @@ thumbnail: thumbnail.webp
 1. Deep Dive 파트에서 버튼을 클릭해 세부 내용을 펼치고 하이라이트를 남긴다.
 2. 접힌 상태에서 하이라이트 카드를 선택하면 엉뚱한 위치로 스크롤 된다.
 
-![스크롤 이슈](/static/posts/contribute-to-hypothesis/스크롤_이슈.gif)
+<video
+  src="/static/posts/contribute-to-hypothesis/스크롤_이슈.webm"
+  autoPlay
+  muted
+  loop
+  playsInline
+/>
 
 개발자여서 한 가지 좋은 점은 버그를 발견했을 때 불편하다고 느끼기만 하는 것이 아니라 무엇이 문제일지 호기심이 일고 내가 개선할 수 있지 않을까 하는 기대감이 함께 한다는 점이다. 그러면 이제부터 구체적인 사례를 통해 오픈소스에 기여하는 방법을 알아보자.
 
@@ -372,7 +378,7 @@ export async function scrollElementIntoView(...) {
 export async function scrollElementIntoView(
   element: HTMLElement,
   /* istanbul ignore next - defaults are overridden in tests */
-  { maxDuration = 500 }: DurationOptions = {}
+  { maxDuration = 500 }: DurationOptions = {},
 ): Promise<void> {
   // Make the body's `tagName` return an upper-case string in XHTML documents
   // like it does in HTML documents. This is a workaround for
@@ -387,7 +393,7 @@ export async function scrollElementIntoView(
   }
 
   await new Promise((resolve) =>
-    scrollIntoView(element, { time: maxDuration }, resolve)
+    scrollIntoView(element, { time: maxDuration }, resolve),
   );
 }
 ```
@@ -412,13 +418,19 @@ if (details && !details.hasAttribute("open")) {
 }
 
 await new Promise((resolve) =>
-  scrollIntoView(element, { time: maxDuration }, resolve)
+  scrollIntoView(element, { time: maxDuration }, resolve),
 );
 ```
 
 재빌드한 다음 스크롤 문제가 더 이상 발생하지 않는 것을 확인했다.
 
-![버그 해결](/static/posts/contribute-to-hypothesis/버그_해결.gif)
+<video
+  src="/static/posts/contribute-to-hypothesis/버그_해결.webm"
+  autoPlay
+  muted
+  loop
+  playsInline
+/>
 
 ### 6. 테스트 작성하기
 
