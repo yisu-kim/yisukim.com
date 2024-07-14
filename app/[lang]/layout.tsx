@@ -40,11 +40,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params: { lang } }: RootStaticParams) {
   const {
-    blog: { title, description },
+    blog: { author, description },
   } = await getDictionary(lang);
   return {
     metadataBase: new URL(BASE_URL),
-    title,
+    title: {
+      default: author,
+      template: `%s | ${author}`,
+    },
     description,
     openGraph: {
       images: `/static/profile.png`,

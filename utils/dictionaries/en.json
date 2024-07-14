@@ -3,8 +3,11 @@
     "name": "Yisu Kim"
   },
   "blog": {
-    "title": "Yisu Kim",
+    "author": "Yisu Kim",
     "description": "A software engineer's call-by-need articles on JavaScript, TypeScript, React and more."
+  },
+  "page": {
+    "posts": "Posts"
   },
   "notFound": {
     "title": "The page cannot be found.",

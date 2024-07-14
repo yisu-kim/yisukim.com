@@ -5,8 +5,11 @@ export type Dictionary = {
     name: string;
   };
   blog: {
-    title: string;
+    author: string;
     description: string;
+  };
+  page: {
+    posts: string;
   };
   notFound: {
     title: string;
