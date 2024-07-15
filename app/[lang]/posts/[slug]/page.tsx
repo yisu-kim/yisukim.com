@@ -5,6 +5,8 @@ import PostContent from "@/components/post-content";
 
 type PostStaticParams = RootStaticParams & Readonly<{ params: MDXData }>;
 
+// NOTE: This code is currently not working as expected in Vercel deployment.
+// There is an open issue regarding this problem: https://github.com/vercel/next.js/issues/54270
 export const dynamicParams = false;
 
 export default async function PostPage({

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Locale } from "@/utils/i18n";
 import { dateFormatOptions } from "@/utils/date";
 import { getPost } from "@/db/post";
+import NotFound from "./not-found";
 import { CustomMDX } from "./mdx";
 
 type Props = Readonly<{
@@ -13,7 +14,7 @@ type Props = Readonly<{
 export default async function PostContent({ lang, slug }: Props) {
   const post = await getPost(lang, slug);
   if (!post) {
-    return;
+    return <NotFound lang={lang} />;
   }
 
   const {
