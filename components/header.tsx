@@ -1,46 +1,32 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { Language } from "@/assets/icons/language";
-import { Locale, getTheOtherLocale } from "@/utils/i18n";
+import { Locale } from "@/utils/i18n";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 
 type Props = Readonly<{
   lang: Locale;
   creator: string;
-  toggleButtonLabel: string;
 }>;
 
-export default function Header({ lang, creator, toggleButtonLabel }: Props) {
+export default function Header({ lang, creator }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
 
-  const showLocaleButton =
+  const showLanguageToggle =
     isHomePage(lang, pathname) || isPostsPage(lang, pathname);
-
-  function toggleLocale() {
-    const newLocale = getTheOtherLocale(lang);
-    const segments = pathname.split("/");
-    segments[1] = newLocale;
-    const newPathname = segments.join("/");
-    router.push(newPathname);
-  }
 
   return (
     <header className="flex w-full items-center justify-between px-6 py-4">
       <Link href={`/${lang}`}>
         <h1 className="text-2xl font-bold">{creator}</h1>
       </Link>
-      {showLocaleButton && (
-        <button
-          aria-label={toggleButtonLabel}
-          className="rounded-lg border p-1 hover:bg-gray-100"
-          onClick={toggleLocale}
-        >
-          <Language width="1.4em" height="1.4em" className="text-gray-500" />
-        </button>
-      )}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        {showLanguageToggle && <LanguageToggle lang={lang} />}
+      </div>
     </header>
   );
 }

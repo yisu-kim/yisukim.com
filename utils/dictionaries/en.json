@@ -14,9 +14,6 @@
     "description": "Please check if the URL you entered is correct.",
     "redirectText": "View all posts"
   },
-  "language": {
-    "toggle": "Toggle Korean/English"
-  },
   "contact": {
     "email": "Send an email",
     "github": "Visit GitHub profile",

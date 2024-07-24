@@ -20,7 +20,6 @@ export default async function RootLayout({
 }: PropsWithChildren<RootStaticParams>) {
   const {
     profile: { name },
-    language: { toggle },
     contact,
   } = await getDictionary(lang);
 
@@ -33,7 +32,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header lang={lang} creator={name} toggleButtonLabel={toggle} />
+          <Header lang={lang} creator={name} />
           <main className="grow">{children}</main>
           <Footer creator={name} contactLinkLabel={contact} />
         </ThemeProvider>

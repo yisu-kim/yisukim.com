@@ -14,9 +14,6 @@
     "description": "입력하신 주소가 정확한지 다시 한번 확인해주세요.",
     "redirectText": "모든 포스트 보기"
   },
-  "language": {
-    "toggle": "한/영 전환"
-  },
   "contact": {
     "email": "이메일 보내기",
     "github": "깃허브 프로필 방문하기",
