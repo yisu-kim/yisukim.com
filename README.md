@@ -12,6 +12,6 @@ npm run dev
 - TypeScript
 - Next.js 14
 - React.js 18
-- Tailwind CSS
+- Shadcn UI (Radix UI + Tailwind CSS)
 - MDX (remark and rehype plugins)
 - Vercel
