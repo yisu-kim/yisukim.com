@@ -19,7 +19,7 @@ export default function Header({ lang, creator }: Props) {
     isHomePage(lang, pathname) || isPostsPage(lang, pathname);
 
   return (
-    <header className="flex w-full items-center justify-between px-6 py-4">
+    <header className="mb-4 flex w-full items-center justify-between border-b p-4">
       <Link href={`/${lang}`}>
         <h1 className="text-2xl font-bold">{creator}</h1>
       </Link>
