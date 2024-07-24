@@ -35,7 +35,10 @@ export async function CustomMDX({ source, components, ...rest }: Props) {
 const rehypePrettyCodeOptions: RehypePrettyCodeOptions = {
   keepBackground: false,
   defaultLang: "plaintext",
-  theme: "catppuccin-latte",
+  theme: {
+    dark: "catppuccin-mocha",
+    light: "catppuccin-latte",
+  },
 };
 
 const rehypeAutolinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
