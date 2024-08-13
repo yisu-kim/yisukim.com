@@ -1,0 +1,293 @@
+---
+title: Unpacking the Slot Component
+description: Get a comprehensive look at the Slot component, a core part of Radix UI. This post breaks it down with simplified code.
+createdAt: 2024-08-13
+thumbnail: thumbnail.webp
+---
+
+This post is inspired by my recent experience using Shadcn UI. I wanted to dive deeper into how each component works, starting with the Button. However, to truly understand Shadcn UI, it's crucial to explore the components of Radix UI, as Shadcn UI is built on Radix UI. Therefore, I decided to start with one of the key features in Radix UI: the Slot component.
+
+The code in this post is a simplified version to help understand the Slot component. Also, please note that this post is based on the Radix UI source code as of 13 August 2024, so there might be updates in the future I haven't covered.
+
+---
+
+## Meet the Slot
+
+### What it is and why it matters
+
+According to the official Radix documentation, `Slot` is defined as:
+
+> Merges its props onto its immediate child.
+
+In other words, the Slot component copies and pastes its props onto its child. So why does this matter? Seeing a concrete example can be helpful. Let's check out a sample from Radix UI.
+
+```jsx title="your-button.jsx" {5}
+import React from "react";
+import { Slot } from "@radix-ui/react-slot";
+
+function Button({ asChild, ...props }) {
+  const Comp = asChild ? Slot : "button";
+  return <Comp {...props} />;
+}
+```
+
+```jsx title="your-app.jsx" {5}
+import { Button } from "./your-button";
+
+function App() {
+  return (
+    <Button asChild>
+      <a href="/contact">Contact</a>
+    </Button>
+  );
+}
+```
+
+So, how will this app appear? Because the `asChild` prop is used, Slot takes over as the top-level element instead of the button. Since Slot merges props onto its direct child, only the \<a\> tag will be rendered, including any props passed to the Button.
+
+```html
+<!-- It will not render like this. -->
+<button>
+  <a href="/contact">Contact</a>
+</button>
+
+<!-- Instead, it will render like this. You'll see a link styled as a button. -->
+<a href="/contact">Contact</a>
+```
+
+Pretty neat. With the asChild prop, Slot can turn into any element you need. Essentially, it lets you decide how things get rendered.
+
+### Composition
+
+Radix UI describes this approach as "Composition," a fundamental concept in software development. The Button component is a great example of this in action. Using the asChild prop, your component has a Radix functionality built into it. This means you can leverage Radix's capabilities while customizing the element to fit your needs, giving you more flexibility and control.
+
+## How Slot works
+
+We'll look at the code in a very abstract way. I hope this makes it easier to grasp the actual code when you see it.
+
+### Slot and SlotClone
+
+First, we'll examine Slot and SlotClone without the branching for Slottable.
+Remember how I described Slot as just copies and pastes? `SlotClone` is handling that part.
+
+```js
+function Slot({ children, ...slotProps }, forwardedRef) {
+  // Slottable branching omitted
+  return (
+    <SlotClone {...slotProps} ref={forwardedRef}>
+      {children}
+    </SlotClone>
+  );
+}
+```
+
+Let's go one step deeper. The main focus is on merging props and composing refs. The rest is about handling exceptions. One exception to keep in mind is that SlotClone expects only one child element.
+
+```js /mergeProps(slotProps, childProps)/ /composeRefs(forwardedRef, childRef)/
+function SlotClone({ children, ...slotProps }, forwardedRef) {
+  if (isValidElement(children)) {
+    const childProps = children.props;
+    const mergedProps = mergeProps(slotProps, childProps);
+
+    const childRef = children.props.ref || children.ref; // depends on React version, don't worry about the details here.
+    const mergedRef = forwardedRef
+      ? composeRefs(forwardedRef, childRef)
+      : childRef;
+
+    return cloneElement(children, { ...mergedProps, ref: mergedRef });
+  }
+
+  if (isNotSingleChild) {
+    throw new Error(
+      "SlotClone expects to receive a single React element child.",
+    );
+  }
+
+  if (isNoChildren) {
+    return null;
+  }
+}
+```
+
+### Merging props, event handlers, and more
+
+We'll see how merging works. The `mergeProps` function covers props, event handlers, styles, and class names. The main point to remember is that the child always takes priority.
+
+```js
+function mergeProps(slotProps, childProps) {
+  return {
+    ...slotProps,
+    ...childProps,
+    onEvents: (event) => {
+      if (hasEventHandlerOnBoth) {
+        childEventHandler(event);
+        slotEventHandler(event);
+      }
+      else if (hasEventHandlerOnSlot) {
+        slotEventHandler(event);
+      }
+    }
+    style: mergeStyles(slotProps.style, childProps.style),
+    className: mergeClassNames(slotProps.className, childProps.className),
+  };
+}
+```
+
+It's easier to understand with JSX expressions.
+
+Child props override Slot props.
+
+```jsx
+<Slot slotProps={slotProps}>
+  <div childProps={childProps}>
+    ...
+  </div>
+</Slot>
+
+<div {...slotProps, ...childProps}>
+  ...
+</div>
+```
+
+Child event handlers run before Slot handlers.
+
+```jsx
+<Slot onClick={slotEventHandler}>
+  <button onClick={childEventHandler}>
+    ...
+  </button>
+</Slot>
+
+<button
+  onClick={() => {
+    childEventHandler();
+    slotEventHandler();
+  }}>
+  ...
+</button>
+```
+
+Child styles replace Slot styles.
+
+```jsx
+<Slot style={{ background: "red", color: "white" }}>
+  <div style={{ background: "yellow" }}>...</div>
+</Slot>
+
+<div style={{ background: "yellow", color: "white" }}>...</div>
+```
+
+Child classNames have higher priority.
+
+```jsx
+<Slot className="slot">
+  <div className="div">...</div>
+</Slot>
+
+<div className="slot div">...</div>
+```
+
+### Composing ref
+
+Let's move on to refs. It's already pretty straightforward, but we can flatten it out to see how it works.
+
+You can see how this uses a closure. The `composeRefs` function takes any number of refs and returns a new function. This function then takes a node and sets each ref to that node.
+
+```js
+const composeRefs =
+  (...refs) =>
+  (node) =>
+    refs.forEach((ref) => setRef(ref, node));
+```
+
+Here's how it looks with JSX. There's no priority between slotRef and childRef since both are applied to the div.
+
+```jsx
+<Slot ref={slotRef}>
+  <div ref={childRef}>...</div>
+</Slot>
+
+<div ref={(node) => {
+    slotRef(node);
+    childRef(node);
+  }}>
+  ...
+</div>
+```
+
+### Slottable and isSlottable
+
+You've seen the basic version of Slot above. Now, we'll see how the `Slottable` component changes things.
+
+Let's compare them side by side.
+
+Without Slottable, Slot expects just one child element. So, if you have more than one child, you'll need to group them, which can be less flexible.
+
+```jsx title="your-button.jsx" {5}
+import React from "react";
+import { Slot } from "@radix-ui/react-slot";
+
+function Button({ asChild, children, ...props }) {
+  const Comp = asChild ? Slot : "button";
+  return <Comp {...props}>{children}</Comp>;
+}
+```
+
+With Slottable, you can have multiple children instead of just one. Plus, you can pick out and manage the slottable ones separately. It gives you the flexibility to place slottable components inside the Slot.
+
+```jsx title="your-button.jsx" {9}
+import React from "react";
+import { Slot, Slottable } from "@radix-ui/react-slot";
+
+function Button({ asChild, children, leftElement, rightElement, ...props }) {
+  const Comp = asChild ? Slot : "button";
+  return (
+    <Comp {...props}>
+      {leftElement}
+      <Slottable>{children}</Slottable>
+      {rightElement}
+    </Comp>
+  );
+}
+```
+
+Now that we're familiar with this, let's take another look at Slot. First, it checks if there's a slottable child. If there is, it uses SlotClone to handle just that slottable child. Otherwise, it passes children to SlotClone as is.
+
+```js
+function Slot({ children, ...props }) {
+  const slottableChild = children.find(isSlottable);
+  if (slottableChild) {
+    return SlotClone({
+      children: slottableChild.props.children,
+      ...props,
+    });
+  }
+  return SlotClone({ children, ...props });
+}
+```
+
+How can you tell if something is slottable? The children are wrapped with Slottable, and a `isSlottable` function is used to check if they're slottable.
+
+```js
+function Slottable({ children }) {
+  return children;
+}
+
+function isSlottable(child) {
+  return isValidElement(child) && hasSlottableType(child);
+}
+```
+
+## Side Note
+
+So, how does that sound so far? I hope this walk-through has been clear and helpful. If you spot any mistakes or have feedback, please reach out! I'd love to hear from you.
+
+For further insights, check out the [source code](https://github.com/radix-ui/primitives/blob/main/packages/react/slot/src/Slot.tsx) or look into the test code and stories. Also, if you're ready to dive in, Radix offers a detailed [guide](https://www.radix-ui.com/primitives/docs/guides/composition) on using this approach and avoiding potential pitfalls.
+
+## References
+
+- [https://www.radix-ui.com/primitives/docs/utilities/slot](https://www.radix-ui.com/primitives/docs/utilities/slot)
+- [https://github.com/radix-ui/primitives/blob/main/packages/react/slot/src/Slot.tsx](https://github.com/radix-ui/primitives/blob/main/packages/react/slot/src/Slot.tsx)
+- [https://www.radix-ui.com/primitives/docs/guides/composition](https://www.radix-ui.com/primitives/docs/guides/composition)
+- [https://medium.com/@bryanmylee/aschild-in-react-svelte-vue-and-solid-for-render-delegation-645c73650ced](https://medium.com/@bryanmylee/aschild-in-react-svelte-vue-and-solid-for-render-delegation-645c73650ced)
+- [https://mjsdo.hashnode.dev/radix-slot](https://mjsdo.hashnode.dev/radix-slot) (Korean)
