@@ -25,7 +25,6 @@ export type Metadata = {
   description: string;
   createdAt: string;
   modifiedAt?: string;
-  thumbnail: string;
 };
 
 export type MDXData = {
