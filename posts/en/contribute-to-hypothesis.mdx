@@ -1,0 +1,660 @@
+---
+title: How to contribute to Hypothesis Open Source
+description: "A guide to getting a PR approved: from issue definition to test writing, based on real experience."
+createdAt: 2024-08-18
+---
+
+When the React beta docs came out, I was looking for a browser extension for my study group. That's how I ended up contributing to open source. As I wrote this, I realized I'd written a lot. But I wanted to share my real experience, so I left it as is. For a more comprehensive guide, check out the [Open Source Guide](https://opensource.guide).
+
+I had to try a few things since the project setup was new to me. If I'd asked for help, I would've figured it out faster. But since there was no rush, I took my time. But if you feel stuck, no worries - the community is always open. You can usually find a link in the README to connect with others. Joining a community like Discord is a great way to get involved.
+
+---
+
+- [I discovered an issue in this open source](#i-discovered-an-issue-in-this-open-source)
+- [Step-by-step guide to contributing code](#step-by-step-guide-to-contributing-code)
+  - [0. Check the project's vital signs](#0-check-the-projects-vital-signs)
+  - [1. Find the right repo](#1-find-the-right-repo)
+  - [2. Be prepared: local edition](#2-be-prepared-local-edition)
+    - [2-1. Aside: Link services and build the extension](#2-1-aside-link-services-and-build-the-extension)
+      - [Troubleshooting 1: yarn link](#troubleshooting-1-yarn-link)
+      - [Troubleshooting 2: This site can't be reached](#troubleshooting-2-this-site-cant-be-reached)
+      - [Troubleshooting 3: dirty git state](#troubleshooting-3-dirty-git-state)
+  - [3. Identify the culprit](#3-identify-the-culprit)
+  - [4. Follow the code's lead](#4-follow-the-codes-lead)
+  - [5. Solve the problem](#5-solve-the-problem)
+  - [6. Prove your point with tests](#6-prove-your-point-with-tests)
+    - [Troubleshooting 4: karma headless chrome](#troubleshooting-4-karma-headless-chrome)
+  - [7. Submit your solution: PR](#7-submit-your-solution-pr)
+  - [8. Get the stamp of approval](#8-get-the-stamp-of-approval)
+  - [9. Seal the deal: merge and release](#9-seal-the-deal-merge-and-release)
+- [Side note](#side-note)
+
+## I discovered an issue in this open source
+
+In my [React docs study group](https://github.com/read-with-us/react-docs), I suggested using Hypothesis, a browser extension for highlighting web docs and sharing notes in real time. It's been helpful for our study sessions.
+
+However, we encountered a small but frustrating issue:
+
+1. Expanding the Deep Dive sections and adding highlights works fine.
+2. But when you try to view a highlighted part with the section collapsed, it scrolls to the wrong spot.
+
+<video
+  src="/static/posts/contribute-to-hypothesis/scroll_issue.webm"
+  autoPlay
+  muted
+  loop
+  playsInline
+/>
+
+You know, as a developer, finding a bug can be a good thing. It's a chance to learn and ask myself, "How can I fix this?" So, I'll walk you through how I approached this issue.
+
+## Step-by-step guide to contributing code
+
+I wanted to find out if I could fix it myself or if I needed to report it.
+
+First question: Does scrolling work properly when the section is already expanded? Yes, it does.
+Next, I used the developer tools to see how to keep it expanded. I noticed that the Deep Dive sections use the \<details\> tag, which is a semantic HTML feature that the library should be able to handle.
+
+![디테일 태그](/static/posts/contribute-to-hypothesis/details_tags.png)
+
+The solution seemed simple: just expand the \<details\> tag before scrolling.
+
+I looked up the MDN docs and saw that adding an `open` attribute would do the job. At this point, I felt confident that I could address this issue myself.
+
+### 0. Check the project's vital signs
+
+Before you get started, please make sure the project is still active. If you're working with a well-known repo like React, you can probably skip this step. But for others, it's crucial to make sure the project is still alive and kicking before you start.
+
+Head to the GitHub organization's page and scroll down to the Repositories section. See if the repos look active by checking open issues, PRs, and their last update dates.
+
+![깃허브 레포 목록](/static/posts/contribute-to-hypothesis/github_repo_list.png)
+
+When checking out a specific repo, take a look at when the last commit was made, how many contributors are involved, and when the last PRs were opened or closed. Also, give the README a good read. You might find important details there, like whether the project is still being maintained.
+
+### 1. Find the right repo
+
+If the project looks active, it's time to identify which repo you need to work on. Typically, the main repos are pinned on the organization's page. It's like a "start here" sign.
+
+![깃허브 주요 레포](/static/posts/contribute-to-hypothesis/github_main_repo.png)
+
+For instance, the Hypothesis organization had 100 repos, but the main ones appeared to be 'h' for the API service, 'client' for the client service, and 'browser-extension' for the browser extension.
+
+At first, I thought I'd need to look at the browser-extension repo since that's where I interact with highlight cards. But after reading the README, I found this:
+
+> Note that the browser extensions are for the most part just a wrapper around the Hypothesis client. Depending on what you're interested in working on, you may need to check out the client repository too.
+
+So, I shifted my focus to the client repo instead. It's always a good idea to do some digging before diving into the code.
+
+### 2. Be prepared: local edition
+
+Now you've got the repo. First things first, check out the README. It's like the instruction manual for the open source project. In this repo, I found a link to a developer guide that explains how to set up your local environment. It's pretty easy to follow.
+
+One thing to note is that I'm not part of the repo, so I need to fork it and clone it using my address, not the one in the guide.
+
+> To build the client for development:
+>
+> ```sh
+> git clone 'https://github.com/hypothesis/client.git'
+> cd client
+> make
+> ```
+
+Let's get started. I'm used to using npm commands, so I was a bit unsure when I saw `make`. But when I ran it, I got a helpful message, and I realized I just needed to use `make dev` to start the local server.
+
+I thought, "Why not just say `make dev` in the guide?" But then I read the Makefile and it all made sense.
+
+> ```make
+> .PHONY: default
+> default: help
+> ```
+
+### 2-1. Aside: Link services and build the extension
+
+But, there's more. To test the client in a browser, I need to run the Hypothesis Chrome extension.
+
+> To run your development client in a browser you'll need a local copy of either the Hypothesis Chrome extension or h. Follow either Running the Client from the Browser Extension or Running the Client From h below. If you're only interested in making changes to the client (and not to h) then running the client from the browser extension is easiest.
+
+Since I need to check this issue through the browser extension, I also read up on how to build the extension.
+
+> 1. Check out the browser extension and follow the steps in the browser extension's documentation to build the extension and configure it to use your local version of the client and the production Hypothesis service.
+> 2. Start the client's development server to rebuild the client whenever it changes:
+>
+> ```sh
+> make dev
+> ```
+>
+> 3. After making changes to the client, you will need to run make in the browser extension repo and reload the extension in Chrome to see changes. You can use Extensions Reloader to make this easier.
+
+The docs suggested checking out the extension repo first. So, I cloned the browser-extension repo locally without forking it, since I don't plan on changing its remote code.
+
+To connect the local client to the extension, I should run `yarn link` in the client folder, and then I should head to the browser-extension folder and run `yarn link hypothesis`.
+
+> Depending on what you're interested in working on, you may need to check out the client repository too. If you do that, you can get the browser extension repository to use your checked-out client repository by running
+>
+> ```sh
+> yarn link
+> ```
+>
+> in the client repository, and then
+>
+> ```sh
+> yarn link hypothesis
+> ```
+>
+> in the browser-extension repository. After that, a call to `make build` will use the built client from the client repository.
+
+#### Troubleshooting 1: yarn link
+
+I thought I was doing everything right, but I got an error message:
+
+```sh
+Unknown Syntax Error: Not enough positional arguments.
+
+$ yarn link [-A,--all] [-p,--private] [-r,--relative] <destination>
+```
+
+I was confused at first, but when I read the message carefully, it said I needed to provide a \<destination\>.
+
+To double-check, I looked up the yarn v1 docs, and just like the guide said, it seemed like I didn't need any extra arguments. But I was still getting an error, which didn't make sense.
+Then I realized my local yarn version is actually v2, which is newer than the docs. So, I checked the yarn v2+ docs, and sure enough, the syntax had changed slightly. Now, I need to specify the exact path.
+
+> Register one or more remote workspaces for use in the current project:
+>
+> ```sh
+> yarn link ~/ts-loader ~/jest
+> ```
+
+My project structure looked like this:
+
+```
+hypothesis
+├── client
+└── browser-extension
+```
+
+So, I headed to the browser-extension folder and ran the command. Thankfully, it worked smoothly without any errors.
+
+```sh
+yarn link ../client
+```
+
+Next, I wanted to see the results of the command. According to the docs, a new resolutions field should be added to the project-level manifest. I assumed that meant the package.json file.
+
+> This command will set a new resolutions field in the project-level manifest and point it to the workspace at the specified location (even if part of another project).
+
+Indeed, when I checked the package.json file, the resolutions field had been updated with the local path.
+
+```json
+"resolutions": {
+  "hypothesis": "portal:/mnt/d/Develop/hypothesis/client"
+}
+```
+
+Additionally, some changes were made to the yarn.lock file.
+
+```json
+"hypothesis@portal:/mnt/d/Develop/hypothesis/client::locator=hypothesis-browser-extension%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "hypothesis@portal:/mnt/d/Develop/hypothesis/client::locator=hypothesis-browser-extension%40workspace%3A."
+  languageName: node
+  linkType: soft
+```
+
+That was another hurdle cleared. Now, I needed to build the browser extension and see if it would use the local client.
+
+> The extension build is configured by a JSON settings file, some examples of which are supplied in the settings/ directory. To build the extension using the default settings file (settings/chrome-dev.json), run make build:
+>
+> ```sh
+> $ make build
+> ```
+
+I followed the build guide, ran the commands, and the build folder was created without any errors - everything looked good.
+
+How do I test this extension in Chrome? The guide had the answer.
+
+> Once you've built the extension, you will be able to load the build/ directory as an unpacked extension:
+>
+> 1. Go to chrome://extensions/ in Chrome.
+> 2. If you used the chrome-prod.json settings file to build a production extension, you will need to remove the "real" production extension from Chrome before loading your locally built one or create a new Chrome profile without the real one installed.
+> 3. Tick Developer mode.
+> 4. Click Load unpacked extension.
+> 5. Browse to the build/ directory where the extension was built and select it.
+
+I discovered Developer mode, which I hadn't known about before. Good thing I got to learn something new. When you enable it, a "Load unpacked" button appears. So, I navigated to the browser-extension folder, selected the build folder itself. The extension was successfully added to Chrome.
+
+![익스텐션 디벨로퍼 모드](/static/posts/contribute-to-hypothesis/extension_developer_mode.png)
+
+#### Troubleshooting 2: This site can't be reached
+
+Another issue came up. After adding the extension, the welcome page(http://localhost:5000/welcome) wouldn't load properly, and the extension was stuck on the loading screen.
+
+I was wondering where this port 5000 came from, so I checked the troubleshooting docs, but couldn't find any explanation. Then I remembered that this project used the settings/chrome-dev.json file when running the basic commands, so I took a look.
+
+```json
+{
+  "buildType": "dev",
+  "manifestV3": true,
+
+  "apiUrl": "http://localhost:5000/api/",
+  "authDomain": "localhost",
+  "bouncerUrl": "http://localhost:8000/",
+  "serviceUrl": "http://localhost:5000/",
+
+  "browserIsChrome": true,
+  "appType": "chrome-extension"
+}
+```
+
+I had a hunch that this might be related to the h repo, which provides API services. And indeed, the h repo guide says the server runs on port 5000.
+
+> This will start the server on port 5000 (http://localhost:5000)
+
+```json
+{
+  "buildType": "production",
+  "manifestV3": true,
+  "key": "{key}",
+
+  "apiUrl": "https://hypothes.is/api/",
+  "authDomain": "hypothes.is",
+  "bouncerUrl": "https://hyp.is/",
+  "serviceUrl": "https://hypothes.is/",
+
+  "oauthClientId": "{id}",
+
+  "sentryPublicDSN": "{DSN}",
+
+  "browserIsChrome": true,
+  "appType": "chrome-extension"
+}
+```
+
+Since I wasn't editing the server repo, I just pointed to the production server instead. I updated the settings and ran it again, and this time the issue was resolved.
+
+> To build the extension from a different settings file, provide a SETTINGS_FILE path:
+>
+> ```sh
+> $ make build SETTINGS_FILE=settings/chrome-prod.json
+> ```
+
+#### Troubleshooting 3: dirty git state
+
+I thought I was finally done, but another error popped up. This time, it complained about the git state. I remembered running the link command earlier, which had changed the package.json and yarn.lock files, but I hadn't committed those changes since I didn't plan to push them. That's what was causing issues with the build.
+
+```
+Error: cannot create production build with dirty git state!
+```
+
+I temporarily committed the changes and re-ran the command. The build was completed without any issues, and the welcome page finally showed up.
+
+![프로젝트 웰컴 페이지](/static/posts/contribute-to-hypothesis/project_welcome_page.png)
+
+I had everything set up, but I wasn't entirely sure if it was pointing to the local environment correctly since I hadn't touched the client code yet. So, I added a # symbol to the sidebar in the client project to test it. I rebuilt both the client and browser-extension, just like the guide said.
+
+And it worked - the # symbol showed up in the sidebar. That meant I had finally got my local development environment set up.
+
+![changes_confirmed](/static/posts/contribute-to-hypothesis/changes_confirmed.png)
+
+### 3. Identify the culprit
+
+Let's try to pinpoint where the issue is happening. I started with the sidebar as a reference point.
+
+I traced it down to:
+
+src/sidebar/index.tsx > HypothesisApp.tsx > SidebarView.tsx > ThreadList.tsx
+
+At this point, I saw the word "scroll" and thought I was on the right track. I looked for the part where the card is clicked.
+
+... > ThreadList.tsx > ThreadCard.tsx > Card.tsx
+
+```tsx
+<Card
+  onClick={e => {
+    // Prevent click events intended for another action from
+    // triggering a page scroll.
+    if (!isFromButtonOrLink(e.target as Element) && thread.annotation) {
+      scrollToAnnotation(thread.annotation);
+    }
+  }}
+  ...
+/>
+```
+
+In the Card's onClick event, I found a method called `scrollToAnnotation`. Just to clarify, this service calls shared highlights "annotations".
+
+... > src/sidebar/services/frame-sync.ts
+
+When I jumped to where the method was defined, I hit a complex file called frame-sync. But I was getting closer.
+
+```ts
+/**
+ * Scroll the frame to the highlight for an annotation.
+ */
+scrollToAnnotation(ann: Annotation) {
+  ...
+  guest.call('scrollToAnnotation', ann.$tag);
+}
+```
+
+I could've followed where the guest was created, but I decided to simply search for scrollToAnnotation to jump to the right spot.
+
+... >>> src/annotator/guest.ts
+
+```ts
+this._hostRPC.on('scrollToAnnotation', (tag: string) => {
+  this._scrollToAnnotation(tag);
+});
+
+...
+
+private async _scrollToAnnotation(tag: string) {
+  ...
+  await this._scrollToAnchor(anchor);
+}
+
+...
+
+private async _scrollToAnchor(anchor: Anchor) {
+  ...
+  await this._integration.scrollToAnchor(anchor);
+}
+```
+
+The scrollToAnchor method was declared in three places: html.ts, pdf.tsx, and vitalsource.ts. Clearly, html.ts was the one I needed.
+
+... >>> src/annotator/integrations/html.ts
+
+```ts
+async scrollToAnchor(anchor: Anchor) {
+  ...
+  await scrollElementIntoView(highlight);
+}
+```
+
+Then I saw a file named scroll.ts, and I knew I had finally found what I was looking for.
+
+... > src/annotator/util/scroll.ts
+
+```ts
+/**
+ * Smoothly scroll an element into view.
+ */
+export async function scrollElementIntoView(...) {
+  ...
+  await new Promise(resolve =>
+    scrollIntoView(element, { time: maxDuration }, resolve),
+  );
+}
+```
+
+Looking back, I should've just searched for `scrollIntoView` directly. Still, I was impressed that the contributors didn't name anything carelessly, and I was happy to have explored the code.
+
+### 4. Follow the code's lead
+
+Now that I'd found the right spot, I wanted to make sure I understood the code before I started making changes. I followed the conventions set by the contributors, since they'd already put thought into this.
+
+```ts
+/**
+ * Smoothly scroll an element into view.
+ */
+export async function scrollElementIntoView(
+  element: HTMLElement,
+  /* istanbul ignore next - defaults are overridden in tests */
+  { maxDuration = 500 }: DurationOptions = {},
+): Promise<void> {
+  // Make the body's `tagName` return an upper-case string in XHTML documents
+  // like it does in HTML documents. This is a workaround for
+  // `scrollIntoView`'s detection of the <body> element. See
+  // https://github.com/KoryNunn/scroll-into-view/issues/101.
+  const body = element.closest("body");
+  if (body && body.tagName !== "BODY") {
+    Object.defineProperty(body, "tagName", {
+      value: "BODY",
+      configurable: true,
+    });
+  }
+
+  await new Promise((resolve) =>
+    scrollIntoView(element, { time: maxDuration }, resolve),
+  );
+}
+```
+
+I noticed a few things that helped me get started:
+
+- They added comments where necessary.
+- When storing HTML tags, they used the tag name as the variable name.
+- When checking HTML tag attributes, they used the && operator instead of the ?. operator.
+
+Since I was only adding a simple code, this gave me a good foundation to work from.
+
+### 5. Solve the problem
+
+Time to write some code! I needed to check if the parent element had a details tag and if it didn't have the open attribute, I needed to add it so the details would expand. I added the code right above the scrollIntoView method call and added a comment to explain what it did.
+
+```ts
+// Ensure that the details are open before scrolling, in case the annotation
+// is within the details tag. This guarantees that the user can promptly view
+// the content on the screen.
+const details = element.closest("details");
+if (details && !details.hasAttribute("open")) {
+  details.setAttribute("open", "");
+}
+
+await new Promise((resolve) =>
+  scrollIntoView(element, { time: maxDuration }, resolve),
+);
+```
+
+After rebuilding, I confirmed that the scrolling issue was fixed.
+
+<video
+  src="/static/posts/contribute-to-hypothesis/bug_fixed.webm"
+  autoPlay
+  muted
+  loop
+  playsInline
+/>
+
+### 6. Prove your point with tests
+
+Depending on the open source project, tests might be required. In my case, I didn't think about tests and went ahead with the PR, but then I saw that the test coverage had decreased in the Codecov report. So, I offered to write tests for the maintainer, which meant I had to take a step back from the usual workflow.
+
+![Codecov 리포트](/static/posts/contribute-to-hypothesis/codecov_report.png)
+
+![테스트 코드리뷰](/static/posts/contribute-to-hypothesis/test_code_review.png)
+
+Test files are usually in the test folder. I found a file called `scroll-test.js` near the `scroll.ts` file I had been working on.
+
+```
+util
+├── test
+│   └── scroll-test.js
+└── scroll.ts
+```
+
+I was nervous since I had no work experience writing test code, but I managed to complete my first test code by looking at the surrounding code and figuring it out.
+
+```ts
+it("scrolls element into view when the target is within the details tag", async () => {
+  const container = document.createElement("div");
+  const details = document.createElement("details");
+  container.append(details);
+
+  const summary = document.createElement("summary");
+  summary.append("Summary");
+  details.append(summary);
+
+  const target = document.createElement("div");
+  target.style.height = "20px";
+  target.style.width = "100px";
+  details.append(target);
+
+  await scrollElementIntoView(target, { maxDuration: 1 });
+
+  const containerRect = container.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+
+  assert.isTrue(containerRect.top <= targetRect.top);
+  assert.isTrue(containerRect.bottom >= targetRect.bottom);
+});
+```
+
+To run the tests, I checked the developer guide again to see what command I needed to run.
+
+> Hypothesis uses Karma and mocha for testing. To run all the tests once, run:
+>
+> ```sh
+> make test
+> ```
+>
+> You can filter the tests which are run by running yarn test --grep \<pattern\>. Only test files matching the regex \<pattern\> will be executed.
+
+#### Troubleshooting 4: karma headless chrome
+
+But again, I ran into another error. I think there's room for improvement in the documentation. I believe that clear and concise documentation is essential for making an open source project more accessible and appealing to new users and potential contributors.
+
+> 23 09 2023 22:28:14.299:INFO [karma-server]: Karma v6.4.2 server started at ...
+> ...
+> 23 09 2023 22:28:14.306:ERROR [launcher]: No binary for ChromeHeadless browser on your platform.
+> Please, set "CHROME_BIN" env variable.
+
+While scanning through package.json, I noticed karma-chrome-launcher, which caught my attention.
+
+> "karma": "^6.4.2",
+> "karma-chai": "^0.1.0",
+> "karma-chrome-launcher": "^3.2.0",
+
+I checked the README in the karma-chrome-launcher repo and found that I could specify which browser to run tests in using the karma.conf.js file.
+
+When I looked at the karma.config.js file in the project, I saw that only ChromeHeadless was set up.
+
+> ```js
+> // karma.conf.js
+> process.env.CHROME_BIN = require("puppeteer").executablePath();
+>
+> module.exports = function (config) {
+>   config.set({
+>     browsers: ["ChromeHeadless"],
+>   });
+> };
+> ```
+
+Do I really need to run it headless? I already have Chrome installed, so I might as well use it. So, I updated the environment variable to point to my local Chrome and changed the settings.
+
+```sh
+export CHROME_BIN='/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe'
+```
+
+```js
+// karma.config.js
+module.exports = function (config) {
+  config.set({
+    browsers: ["Chrome"],
+  });
+};
+```
+
+I just wanted to see the test results I wrote, so I specified the file and ran it according to the guide.
+
+> ```sh
+>  yarn test --grep **/scroll-test.js
+> ```
+
+![신규 추가 테스트 결과](/static/posts/contribute-to-hypothesis/new_added_test_results.png)
+
+After confirming my test passed, I committed and pushed it. Later, after getting my test code reviewed, I was able to get back to 100% coverage.
+
+![Codecov 리포트 갱신](/static/posts/contribute-to-hypothesis/codecov_report_update.png)
+
+### 7. Submit your solution: PR
+
+I had finished writing all the test code and pushed it to my branch, it was time to create a PR. I opened a PR that merged my work branch into the default branch.
+
+![PR 브랜치](/static/posts/contribute-to-hypothesis/pull_request_branch.png)
+
+If a template is provided, simply follow the guide. But what if there's no template? Take a look at previous PRs and adapt them to your situation.
+
+Since this was a bug report, I explained the issue in the Description and outlined the changes I made in the Changes Made section. I also attached a video to help reviewers understand. You can check out the detailed PR [here](https://github.com/hypothesis/client/pull/5701).
+
+![PR 내용](/static/posts/contribute-to-hypothesis/pull_request.png)
+
+### 8. Get the stamp of approval
+
+I had been looking forward to this part - getting feedback on my code from an open source maintainer.
+
+![코드리뷰 1](/static/posts/contribute-to-hypothesis/code_review_1.png)
+
+![코드리뷰 2](/static/posts/contribute-to-hypothesis/code_review_2.png)
+
+![코드리뷰 3](/static/posts/contribute-to-hypothesis/code_review_3.png)
+
+The maintainer got back to me quickly, and I fixed some minor issues right away. I thought that would be it, given how simple my code was, but then I got some more feedback on the test code I submitted later.
+
+![코드리뷰 4](/static/posts/contribute-to-hypothesis/code_review_4.png)
+
+![코드리뷰 5](/static/posts/contribute-to-hypothesis/code_review_5.png)
+
+I also made some changes based on other suggestions I received. Thanks to @robertknight and @acelaya, my test code became much simpler and just checked if the details tag was open when scrolling.
+
+```ts
+it("opens containing `<details>` tag to make content visible", async () => {
+  const container = createContainer();
+  const details = document.createElement("details");
+  container.append(details);
+
+  const summary = document.createElement("summary");
+  summary.append("Summary");
+  details.append(summary);
+
+  const target = document.createElement("div");
+  details.append(target);
+
+  assert.isFalse(details.open);
+  await scrollElementIntoView(target, { maxDuration: 1 });
+  assert.isTrue(details.open);
+});
+```
+
+Remember, open source maintainers often have other commitments, so don't rush them. Just address the feedback, submit your changes, and keep the conversation going. Before you know it, you'll get their approval.
+
+![메인테이너 PR 승인](/static/posts/contribute-to-hypothesis/pull_request_approval.png)
+
+### 9. Seal the deal: merge and release
+
+Now it's just a waiting game. Your PR will usually be merged with other changes into the next version, so it might take a few days or weeks. Then, you'll see your PR merged and marked with a nice purple icon.
+
+![릴리즈 대기](/static/posts/contribute-to-hypothesis/release_waiting.png)
+
+Check out the release notes to see if your issue number is included.
+
+![릴리즈 노트](/static/posts/contribute-to-hypothesis/release_notes.png)
+
+It had already been updated to 1.1350.0.3. And yes, the scroll issue was gone. 🎉
+
+![익스텐션 버전](/static/posts/contribute-to-hypothesis/extension_version.png)
+
+## Side note
+
+I benefited from this experience in a few ways:
+
+1. I used this in my [React reference docs study group](https://github.com/read-with-us/react-docs-reference). We had issues with scrolling in our previous study, but then it became smooth sailing.
+
+2. I learned about the `yarn link` command, which helped me update our internal library packages at work. I skipped unnecessary steps and saved time.
+
+3. I wrote my first test code! I was hesitant to start writing tests since my project didn't have any. However, adding one to the existing environment was easier than I expected.
+
+Contributing to open source helped me grow more than I thought possible. I hope my experience can be helpful to someone out there. If you have any questions or want to share your experience, feel free to reach out!
+
+## References
+
+- [https://github.com/hypothesis](https://github.com/hypothesis)
+- [https://github.com/hypothesis/browser-extension](https://github.com/hypothesis/browser-extension)
+- [https://github.com/hypothesis/browser-extension/blob/main/docs/building.md](https://github.com/hypothesis/browser-extension/blob/main/docs/building.md)
+- [https://github.com/hypothesis/browser-extension/blob/main/docs/troubleshooting.md](https://github.com/hypothesis/browser-extension/blob/main/docs/troubleshooting.md)
+- [https://h.readthedocs.io/projects/client/en/latest/developers/developing.html](https://h.readthedocs.io/projects/client/en/latest/developers/developing.html)
+- [https://h.readthedocs.io/en/latest/developing/install](https://h.readthedocs.io/en/latest/developing/install)
+- [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+- [https://yarnpkg.com/cli/link](https://yarnpkg.com/cli/link)
+- [https://classic.yarnpkg.com/lang/en/docs/cli/link](https://classic.yarnpkg.com/lang/en/docs/cli/link)
+- [https://github.com/karma-runner/karma-chrome-launcher](https://github.com/karma-runner/karma-chrome-launcher)

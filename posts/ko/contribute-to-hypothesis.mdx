@@ -14,7 +14,7 @@ createdAt: 2023-09-24
 2. 접힌 상태에서 하이라이트 카드를 선택하면 엉뚱한 위치로 스크롤 된다.
 
 <video
-  src="/static/posts/contribute-to-hypothesis/스크롤_이슈.webm"
+  src="/static/posts/contribute-to-hypothesis/scroll_issue.webm"
   autoPlay
   muted
   loop
@@ -33,7 +33,7 @@ createdAt: 2023-09-24
 
 개발자 도구를 열어 어떻게 하면 펼친 상태로 바꿀 수 있을지 확인해 보았다. Deep Dive 파트에는 details 태그가 사용되었는데 시맨틱한 HTML이므로 라이브러리에서 범용적으로 대응해도 무방해 보인다.
 
-![디테일 태그](/static/posts/contribute-to-hypothesis/디테일_태그.png)
+![디테일 태그](/static/posts/contribute-to-hypothesis/details_tags.png)
 
 그렇다면? 스크롤 하기 전에 details 태그를 미리 펼치기만 하면 된다.
 
@@ -45,7 +45,7 @@ createdAt: 2023-09-24
 
 깃허브 조직을 살펴보는 경우라면 하단 Repositories 부분에서 레포들의 심장이 생생하게 뛰고 있는지 훑어보면 된다. 열려 있는 이슈와 PR 그리고 최근 업데이트 일시를 참고해 보자.
 
-![깃허브 레포 목록](/static/posts/contribute-to-hypothesis/깃허브_레포_목록.png)
+![깃허브 레포 목록](/static/posts/contribute-to-hypothesis/github_repo_list.png)
 
 기여할 레포가 명확해서 바로 들어가 볼 수 있다면 마지막 커밋은 언제인지, 컨트리뷰터는 몇 명인지, 최근에 열리거나 닫힌 PR의 날짜는 언제인지 등을 확인해 보는 것이 좋다. README에도 공지가 없는지 잘 읽어보자. 더 이상 유지보수를 하지 않는 레포일 수도 있다.
 
@@ -53,7 +53,7 @@ createdAt: 2023-09-24
 
 활발하게 오픈소스 활동이 이루어지고 있다면 본격적으로 어떤 레포에서 코드를 수정해야 하는지 찾아야 한다. 보통 첫 화면에서 Pinned 부분을 확인하면 주요 레포가 무엇인지 알 수 있다.
 
-![깃허브 주요 레포](/static/posts/contribute-to-hypothesis/깃허브_주요_레포.png)
+![깃허브 주요 레포](/static/posts/contribute-to-hypothesis/github_main_repo.png)
 
 [hypothesis](https://github.com/hypothesis) 조직에는 100개의 레포가 있지만 그 중 핵심은 API 서비스인 h 레포, 클라이언트 서비스인 client 레포, 그리고 브라우저 익스텐션 서비스인 browser-extension 레포인 것 같다.
 
@@ -199,11 +199,11 @@ package.json 파일을 확인해보니 그 말대로 아래와 같이 resolution
 
 Developer mode라는 게 있다는 걸 처음 알았다. 모드를 활성화하면 Load unpacked 버튼이 나타나게 되는데 browser-extension 폴더로 이동해 build 폴더 자체를 선택하면 정말로 익스텐션이 추가된다.
 
-![익스텐션 디벨로퍼 모드](/static/posts/contribute-to-hypothesis/익스텐션_디벨로퍼_모드.png)
+![익스텐션 디벨로퍼 모드](/static/posts/contribute-to-hypothesis/extension_developer_mode.png)
 
 #### 트러블슈팅 2: This site can't be reached
 
-그런데 또다시 문제가 발생했다. 익스텐션 추가와 동시에 이동되는 http\<area\>://localhost:5000/welcome 페이지가 정상적으로 실행되지 않고 있었다. 익스텐션도 마찬가지로 계속 로딩 중 표시만 뜨면서 정상적으로 동작하지 않았다.
+그런데 또다시 문제가 발생했다. 익스텐션 추가와 동시에 이동되는 http://localhost:5000/welcome 페이지가 정상적으로 실행되지 않고 있었다. 익스텐션도 마찬가지로 계속 로딩 중 표시만 뜨면서 정상적으로 동작하지 않았다.
 
 그래서 이 5000 포트가 뜬금없이 어디서 등장한 건지 한참 고민했다. [트러블슈팅 문서](https://github.com/hypothesis/browser-extension/blob/main/docs/troubleshooting.md)도 읽어보았지만 5000포트가 정확히 무얼 의미하는지 설명하는 내용이 없었다. 아까 가이드에서 기본 명령어를 실행할 때 settings/chrome-dev.json 파일을 사용한다고 했으므로 해당 파일을 살펴보았다. 이 중 apiUrl을 보면 로컬 호스트의 5000 포트를 바라보고 있는 걸 알 수 있다.
 
@@ -224,7 +224,7 @@ Developer mode라는 게 있다는 걸 처음 알았다. 모드를 활성화하�
 
 문득 주요 서비스 3개 중 하나인 h 레포가 API 서비스를 제공하고 있으므로 로컬에서 실행한 API 서버를 바라보기 위한 설정이 아닐까 하는 짐작이 들었다. [h 레포의 가이드](https://h.readthedocs.io/en/latest/developing/install/)를 읽어보니 역시나 서버가 5000 포트로 실행되는 것을 알 수 있었다.
 
-> This will start the server on port 5000 (http\<area\>://localhost:5000)
+> This will start the server on port 5000 (http://localhost:5000)
 
 서버 레포를 수정하는 것이 아니므로 그냥 프로덕션 서버를 바라보아도 무방하다. chrome-prod.json 파일을 살펴보니 역시나 apiUrl이 프로덕션 도메인을 가리키고 있다.
 
@@ -266,13 +266,13 @@ Error: cannot create production build with dirty git state!
 
 변경 사항을 임시로 커밋하고 명령어를 재실행해 보니 아무 문제 없이 빌드가 종료되고 이번에는 정상적으로 welcome 페이지가 표시된다.
 
-![프로젝트 웰컴 페이지](/static/posts/contribute-to-hypothesis/프로젝트_웰컴_페이지.png)
+![프로젝트 웰컴 페이지](/static/posts/contribute-to-hypothesis/project_welcome_page.png)
 
 이제 정말 모든 세팅이 끝났다. 하지만 client 코드를 아직 건드리지 않았기 때문에 로컬을 바라보는 게 맞는지 확신이 안 든다. 프론트엔드 개발자라서인지 눈으로 확인해야 마음이 편해서 client 프로젝트에서 사이드바 부분을 찾아 # 문자를 추가해 보았다. 이때, 가이드에 설명되어 있듯이 client와 browser-extension을 다시 빌드해야 한다는 점에 유의했다.
 
 추가한 #이 사이드바에 잘 나타난다. 드디어, 정말로, 마침내 로컬에서 개발할 환경이 갖춰졌다. 사실 막힐 때마다 그냥 이슈만 보고하고 끝낼 걸 그랬나 하는 생각이 들었지만 역시 포기하지 않길 잘했다. 🙌
 
-![변경사항_반영_확인](/static/posts/contribute-to-hypothesis/변경사항_반영_확인.png)
+![changes_confirmed](/static/posts/contribute-to-hypothesis/changes_confirmed.png)
 
 ### 3. 버그를 수정할 위치 찾기
 
@@ -424,7 +424,7 @@ await new Promise((resolve) =>
 재빌드한 다음 스크롤 문제가 더 이상 발생하지 않는 것을 확인했다.
 
 <video
-  src="/static/posts/contribute-to-hypothesis/버그_해결.webm"
+  src="/static/posts/contribute-to-hypothesis/bug_fixed.webm"
   autoPlay
   muted
   loop
@@ -435,9 +435,9 @@ await new Promise((resolve) =>
 
 오픈소스마다 다르지만 테스트를 요구하는 경우가 꽤 있다. 내 경우에는 미처 테스트를 생각하지 못하고 바로 PR을 올렸다가 Codecov 리포트에서 테스트 커버리지가 낮아진 것을 확인하고 자발적으로 테스트를 작성하겠다고 메인테이너에게 이야기해서 순서가 뒤바뀌게 되었다.
 
-![Codecov 리포트](/static/posts/contribute-to-hypothesis/Codecov_리포트.png)
+![Codecov 리포트](/static/posts/contribute-to-hypothesis/codecov_report.png)
 
-![테스트 코드리뷰](/static/posts/contribute-to-hypothesis/테스트_코드리뷰.png)
+![테스트 코드리뷰](/static/posts/contribute-to-hypothesis/test_code_review.png)
 
 테스트 파일은 보통 test 폴더에 모여 있다. scroll.ts와 동일한 레벨에 위치한 test 폴더를 열어보니 scroll-test.js 파일을 찾을 수 있었다.
 
@@ -540,7 +540,7 @@ module.exports = function (config) {
 
 오류 없이 브라우저가 자동 실행되면서 3000개가 넘는 테스트가 수행되었다.
 
-![테스트 수행 결과](/static/posts/contribute-to-hypothesis/테스트_수행_결과.png)
+![테스트 수행 결과](/static/posts/contribute-to-hypothesis/test_results.png)
 
 아니 그런데 너무 많다. 내가 작성한 테스트의 결과만 보고 싶으니 가이드에서 알려준 대로 원하는 파일만 지정해서 테스트해 보자.
 
@@ -548,39 +548,39 @@ module.exports = function (config) {
 >  yarn test --grep **/scroll-test.js
 > ```
 
-![신규 추가 테스트 결과](/static/posts/contribute-to-hypothesis/신규_추가_테스트_결과.png)
+![신규 추가 테스트 결과](/static/posts/contribute-to-hypothesis/new_added_test_results.png)
 
 테스트가 통과하는 것을 확인했으니 커밋해서 올렸다. 이후 테스트 코드를 리뷰 받고 나자 100% 커버리지를 회복할 수 있었다.
 
-![Codecov 리포트 갱신](/static/posts/contribute-to-hypothesis/Codecov_리포트_갱신.png)
+![Codecov 리포트 갱신](/static/posts/contribute-to-hypothesis/codecov_report_update.png)
 
 ### 7. PR 작성하기
 
 테스트 코드까지 모두 완성해서 브랜치에 올렸다면 이제 PR을 작성할 시간이다. 디폴트 브랜치에 자신의 작업 브랜치를 머지하는 PR을 열어보자.
 
-![PR 브랜치](/static/posts/contribute-to-hypothesis/PR_브랜치.png)
+![PR 브랜치](/static/posts/contribute-to-hypothesis/pull_request_branch.png)
 
 템플릿을 제공하는 경우에는 가이드를 따라 작성하면 되지만 템플릿이 없는 경우에는 어떻게 해야 할까? 이전에 작성된 PR을 살펴보고 상황에 맞게 따라 하면 된다. 버그 리포트이기 때문에 이슈가 발생한 상황을 Description에 설명하고 Changes Made에는 작업한 내용을 설명하는 형식을 채택했다. 또한, 리뷰어의 이해를 돕기 위한 동영상도 첨부했다.
 
 자세한 PR은 [여기](https://github.com/hypothesis/client/pull/5701)에서 확인할 수 있다. 참고로 PR을 영작할 때 [DeepL](https://www.deepl.com/translator)이라는 번역기의 도움을 많이 받았다.
 
-![PR 내용](/static/posts/contribute-to-hypothesis/PR_내용.png)
+![PR 내용](/static/posts/contribute-to-hypothesis/pull_request.png)
 
 ### 8. 코드 리뷰에 피드백하고 승인받기
 
 가장 기대되는 파트다. 이런 기회가 아니면 언제 오픈소스 메인테이너에게 코드 리뷰를 받을 수 있을까?
 
-![코드리뷰 1](/static/posts/contribute-to-hypothesis/코드리뷰_1.png)
+![코드리뷰 1](/static/posts/contribute-to-hypothesis/code_review_1.png)
 
-![코드리뷰 2](/static/posts/contribute-to-hypothesis/코드리뷰_2.png)
+![코드리뷰 2](/static/posts/contribute-to-hypothesis/code_review_2.png)
 
-![코드리뷰 3](/static/posts/contribute-to-hypothesis/코드리뷰_3.png)
+![코드리뷰 3](/static/posts/contribute-to-hypothesis/code_review_3.png)
 
 얼마 지나지 않아 메인테이너에게 답변을 받았고 사소한 수정 사항이 있어 빠르게 반영했다. 작업한 코드가 워낙 심플해서 리뷰는 이대로 끝일 줄 알았으나 6번에서 말했듯이 뒤늦게 올린 테스트 코드에서 추가적인 지적을 받게 되었다.
 
-![코드리뷰 4](/static/posts/contribute-to-hypothesis/코드리뷰_4.png)
+![코드리뷰 4](/static/posts/contribute-to-hypothesis/code_review_4.png)
 
-![코드리뷰 5](/static/posts/contribute-to-hypothesis/코드리뷰_5.png)
+![코드리뷰 5](/static/posts/contribute-to-hypothesis/code_review_5.png)
 
 이 외에도 받은 몇몇 조언에 따라 코드를 수정했다. 결과적으로 @robertknight와 @acelaya 두 분 덕분에 탈이 많았던 테스트 코드가 아래와 같이 심플하게 정리되었다. 즉, 스크롤 전후로 details 태그가 open 상태인지 확인한다.
 
@@ -605,21 +605,21 @@ it("opens containing `<details>` tag to make content visible", async () => {
 
 오픈소스 메인테이너들은 보통 본업이 따로 있는 경우가 많아 확인이 늦어지곤 한다. 조급해하지 말고 지적받은 부분을 고쳐서 올리고 코멘트를 주고받다 보면 어느 순간 메인테이너의 승인을 받을 수 있다.
 
-![메인테이너 PR 승인](/static/posts/contribute-to-hypothesis/메인테이너_PR_승인.png)
+![메인테이너 PR 승인](/static/posts/contribute-to-hypothesis/pull_request_approval.png)
 
 ### 9. 메인 브랜치에 병합 및 릴리즈 되기
 
 이제부터는 인내심만 가지고 기다리면 된다. 보통 다른 PR과 함께 다음 버전에 포함되므로 짧으면 며칠에서 길면 몇 주가 지나면 어느 순간 PR이 머지되어 기분 좋은 보라색 아이콘으로 바뀐 것을 발견할 수 있다.
 
-![릴리즈 대기](/static/posts/contribute-to-hypothesis/릴리즈_대기.png)
+![릴리즈 대기](/static/posts/contribute-to-hypothesis/release_waiting.png)
 
 [v1.1336.0 릴리즈 노트](https://github.com/hypothesis/client/releases/tag/v1.1336.0)에 본인의 이슈 넘버가 포함되었는지 확인해보자.
 
-![릴리즈 노트](/static/posts/contribute-to-hypothesis/릴리즈_노트.png)
+![릴리즈 노트](/static/posts/contribute-to-hypothesis/release_notes.png)
 
 당시에 익스텐션은 따로 확인하지 않아 이제야 버전을 살펴보았는데 어느새 1.1350.0.3까지 업데이트되었다. 물론 최신 버전에서는 스크롤 이슈가 해결된 것을 확인할 수 있었다. 🎉
 
-![익스텐션 버전](/static/posts/contribute-to-hypothesis/익스텐션_버전.png)
+![익스텐션 버전](/static/posts/contribute-to-hypothesis/extension_version.png)
 
 ## 시간을 들인 가치가 있었나?
 
