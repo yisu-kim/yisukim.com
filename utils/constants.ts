@@ -1,1 +1,1 @@
-export const BASE_URL = "https://blog-yisukim.vercel.app";
+export const BASE_URL = "https://yisukim.com";
