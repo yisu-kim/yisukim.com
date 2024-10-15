@@ -1,11 +1,8 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
-  content: [
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-	],
+  content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
@@ -73,14 +70,21 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        pulse: {
+          "0%": { transform: "scale(1)" },
+          "50%, 75%": { transform: "scale(2.2)" },
+          "50%, 100% ": { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        // Animation inspired by Sasha Tran: https://codepen.io/sashatran/pen/vRrxXw
+        pulse: "pulse 2.5s infinite cubic-bezier(0, 0, 0.49, 1.02)",
       },
     },
   },
-  plugins: [require("@tailwindcss/typography"),require("tailwindcss-animate")],
-} satisfies Config
+  plugins: [require("@tailwindcss/typography"), require("tailwindcss-animate")],
+} satisfies Config;
 
-export default config
+export default config;

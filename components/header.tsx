@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Locale } from "@/utils/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
+import { StatusBadge } from "@/components/status-badge";
 
 type Props = Readonly<{
   lang: Locale;
@@ -20,9 +21,12 @@ export default function Header({ lang, creator }: Props) {
 
   return (
     <header className="mb-4 flex w-full items-center justify-between border-b p-4">
-      <Link href={`/${lang}`}>
-        <h1 className="text-2xl font-bold">{creator}</h1>
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link href={`/${lang}`}>
+          <h1 className="text-2xl font-bold">{creator}</h1>
+        </Link>
+        <StatusBadge />
+      </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
         {showLanguageToggle && <LanguageToggle lang={lang} />}
