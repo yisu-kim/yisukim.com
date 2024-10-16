@@ -11,9 +11,10 @@ import { StatusBadge } from "@/components/status-badge";
 type Props = Readonly<{
   lang: Locale;
   creator: string;
+  status: string;
 }>;
 
-export default function Header({ lang, creator }: Props) {
+export default function Header({ lang, creator, status }: Props) {
   const pathname = usePathname();
 
   const showLanguageToggle =
@@ -25,7 +26,7 @@ export default function Header({ lang, creator }: Props) {
         <Link href={`/${lang}`}>
           <h1 className="text-2xl font-bold">{creator}</h1>
         </Link>
-        <StatusBadge />
+        <StatusBadge text={status} />
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />

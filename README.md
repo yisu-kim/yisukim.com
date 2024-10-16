@@ -28,3 +28,4 @@ npm run dev
 - [x] SSG
 - [x] custom domain
 - [x] not found page
+- [ ] i18n library
