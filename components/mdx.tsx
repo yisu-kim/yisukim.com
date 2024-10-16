@@ -2,6 +2,7 @@ import * as runtime from "react/jsx-runtime";
 import { ComponentProps } from "react";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { evaluate, EvaluateOptions } from "@mdx-js/mdx";
 import { MDXComponents } from "mdx/types";
@@ -67,9 +68,7 @@ const customComponents = {
           ? "not-prose"
           : "prose"
       }
-    >
-      {props.children}
-    </figure>
+    />
   ),
   img: ({
     src,
@@ -103,4 +102,10 @@ const customComponents = {
       </span>
     );
   },
+  a: ({ href = "/", ...rest }: ComponentProps<"a">) =>
+    href.startsWith("https") ? (
+      <a href={href} className="break-words" {...rest} />
+    ) : (
+      <Link href={href} {...rest} />
+    ),
 };
