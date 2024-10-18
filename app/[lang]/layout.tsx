@@ -27,7 +27,9 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} className={pretendard.className}>
-      <GoogleAnalytics gaId="G-8FFER2H6KG" />
+      {process.env.NODE_ENV === "production" && (
+        <GoogleAnalytics gaId="G-8FFER2H6KG" />
+      )}
       <body className="mx-auto flex h-dvh max-w-screen-md flex-col overflow-y-auto">
         <ThemeProvider
           attribute="class"
