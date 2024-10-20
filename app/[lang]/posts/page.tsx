@@ -9,7 +9,7 @@ export default function PostsPage({ params: { lang } }: RootStaticParams) {
 
 export async function generateMetadata({ params: { lang } }: RootStaticParams) {
   const {
-    page: {posts },
+    page: { posts },
   } = await getDictionary(lang);
   return {
     metadataBase: new URL(BASE_URL),
