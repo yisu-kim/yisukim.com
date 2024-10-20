@@ -1,11 +1,11 @@
 type Config = {
-  channelTalk: {
+  channelSDK: {
     pluginKey: string;
   };
 };
 
 export const config: Config = {
-  channelTalk: {
+  channelSDK: {
     pluginKey: process.env.NEXT_PUBLIC_CHANNEL_TALK_PLUGIN_KEY as string,
   },
 };

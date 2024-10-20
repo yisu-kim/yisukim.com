@@ -18,7 +18,7 @@ export default function ChannelSDKLoader({
   useEffect(() => {
     ChannelSDKService.loadScript();
     ChannelSDKService.boot({
-      pluginKey: config.channelTalk.pluginKey,
+      pluginKey: config.channelSDK.pluginKey,
       // Applies to new users; does not modify existing users' language settings.
       // See: https://developers.channel.io/docs/web-boot-option#language
       language: lang,
@@ -26,7 +26,7 @@ export default function ChannelSDKLoader({
 
     return () => {
       ChannelSDKService.shutdown();
-      // Workaround for Next.js dynamic [lang] route and ChannelTalk script handling
+      // Workaround for Next.js dynamic [lang] route and Channel SDK handling
       // This ensures a clean slate is provided when switching between language routes
       ChannelSDKService.unloadScript();
     };
