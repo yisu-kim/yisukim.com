@@ -6,6 +6,7 @@ import { BASE_URL } from "@/utils/constants";
 import { Locale, i18n } from "@/utils/i18n";
 import { getDictionary } from "@/utils/dictionaries";
 import { ThemeProvider } from "@/contexts/theme";
+import ChannelSDKLoader from "@/components/channel-sdk-loader";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
@@ -27,9 +28,11 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} className={pretendard.className}>
-      {process.env.NODE_ENV === "production" && (
-        <GoogleAnalytics gaId="G-8FFER2H6KG" />
-      )}
+      <head>
+        {process.env.NODE_ENV === "production" && (
+          <GoogleAnalytics gaId="G-8FFER2H6KG" />
+        )}
+      </head>
       <body className="mx-auto flex h-dvh max-w-screen-md flex-col overflow-y-auto">
         <ThemeProvider
           attribute="class"
@@ -37,9 +40,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header lang={lang} creator={name} status={status} />
-          <main className="grow">{children}</main>
-          <Footer creator={name} contactLinkLabel={contact} />
+          <ChannelSDKLoader lang={lang}>
+            <Header lang={lang} creator={name} status={status} />
+            <main className="grow">{children}</main>
+            <Footer creator={name} contactLinkLabel={contact} />
+          </ChannelSDKLoader>
         </ThemeProvider>
       </body>
     </html>
